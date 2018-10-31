@@ -9,8 +9,8 @@ A Swift library for encoding and decoding `Codable` types to `[String: Any]`.
 
 ```swift
 struct Foo: Decodable {
-	var name: String
-	var age: Int
+   var name: String
+   var age: Int
 }
 
 let foo = try DictionaryDecoder().decode(Foo.self, from: ["name": "Foo", "age": 99])
