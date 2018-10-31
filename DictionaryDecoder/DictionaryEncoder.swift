@@ -6,6 +6,8 @@ import Foundation
 
 public final class DictionaryEncoder {
 
+    public init () { }
+
     public func encode<T>(_ value: T) throws -> [String: Any] where T : Encodable {
         guard let dictionary = try Encoder().encodeToAny(value) as? [String: Any] else {
             throw Error.unsupported
