@@ -1,2 +1,2 @@
 # DictionaryDecoder
-Codable to [String: Any]
+Codable to `[String: Any]`
