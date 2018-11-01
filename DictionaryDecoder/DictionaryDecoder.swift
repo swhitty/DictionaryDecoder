@@ -10,9 +10,7 @@ public final class DictionaryDecoder {
 
     public func decode<T: Decodable>(_ type: T.Type, from dictionary: [String: Any]) throws -> T {
 
-        let decoder = Decoder(codingPath: [],
-                              storage: .keyed(dictionary))
-
+        let decoder = Decoder(codingPath: [], storage: .keyed(dictionary))
         return try T.init(from: decoder)
     }
 }
