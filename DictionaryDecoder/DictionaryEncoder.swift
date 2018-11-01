@@ -174,7 +174,6 @@ extension DictionaryEncoder {
         }
 
         func nestedContainer<NestedKey>(keyedBy keyType: NestedKey.Type, forKey key: Key) -> KeyedEncodingContainer<NestedKey> {
-
             let path = self.codingPath.appending(key: key)
             let keyed = KeyedContainer<NestedKey>(codingPath: path)
             self.storage[key.stringValue] = .container(keyed)
