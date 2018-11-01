@@ -92,19 +92,19 @@ private protocol EncoderContainer {
 extension DictionaryEncoder {
 
     final class KeyedContainer<K : CodingKey>: KeyedEncodingContainerProtocol, EncoderContainer {
-
         typealias Key = K
+
         public let codingPath: [CodingKey]
+
+        init(codingPath: [CodingKey]) {
+            self.codingPath = codingPath
+            self.storage = [:]
+        }
 
         private var storage: [String: Storage]
 
         func toAny() throws -> Any {
             return try self.storage.mapValues { try $0.toAny() }
-        }
-
-        init(codingPath: [CodingKey]) {
-            self.codingPath = codingPath
-            self.storage = [:]
         }
 
         func encodeNil(forKey key: Key) throws {
@@ -201,26 +201,21 @@ extension DictionaryEncoder {
 
     final class UnkeyedContainer : Swift.UnkeyedEncodingContainer, EncoderContainer {
 
-        func toAny() throws -> Any {
-            return try self.storage.map { try $0.toAny() }
-        }
-
-        // MARK: Properties
         public let codingPath: [CodingKey]
 
-        private var storage: [Storage] = []
-
-        /// The number of elements encoded into the container.
-        public var count: Int {
-            return storage.count
-        }
-
-        // MARK: - Initialization
         init(codingPath: [CodingKey]) {
             self.codingPath = codingPath
         }
 
-        // MARK: - UnkeyedEncodingContainer Methods
+        private var storage: [Storage] = []
+
+        func toAny() throws -> Any {
+            return try self.storage.map { try $0.toAny() }
+        }
+
+        public var count: Int {
+            return storage.count
+        }
 
         func encodeNil() throws {
             self.storage.append(.value(Optional<Any>.none as Any))
@@ -312,21 +307,19 @@ extension DictionaryEncoder {
 
     final class SingleContainer: SingleValueEncodingContainer, EncoderContainer {
 
+        public let codingPath: [CodingKey]
+
+        init(codingPath: [CodingKey]) {
+            self.codingPath = codingPath
+        }
+
+        var value: Any?
+
         func toAny() throws -> Any {
             guard let value = self.value else {
                 throw Error.incomplete(at: self.codingPath)
             }
             return value
-        }
-
-        var value: Any?
-
-        // MARK: Properties
-        public let codingPath: [CodingKey]
-
-        // MARK: - Initialization
-        init(codingPath: [CodingKey]) {
-            self.codingPath = codingPath
         }
 
         func encodeNil() throws {
