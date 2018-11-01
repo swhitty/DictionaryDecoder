@@ -31,6 +31,21 @@ final class DictionaryEncoderTests: XCTestCase {
         XCTAssertNil([CodingKey].IndexKey(stringValue: "any"))
     }
 
+    func testEmptyStructIsEncoded() throws {
+        struct Empty: Encodable {}
+
+        let result = try DictionaryEncoder().encode(Empty())
+        XCTAssertTrue(result.isEmpty)
+    }
+
+    func testVoidEncodeMethodThrowsError() throws {
+        struct ErrorStruct: Encodable {
+            func encode(to encoder: Encoder) throws { }
+        }
+
+        XCTAssertThrowsError(try DictionaryEncoder().encode(ErrorStruct()))
+    }
+
     // MARK: - KeyedContainer
 
     func testKeyedContainerEncodesNil() throws {

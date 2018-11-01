@@ -22,26 +22,23 @@ private extension DictionaryEncoder {
     enum Storage {
         case value(Any)
         case container(EncoderContainer)
-        case encoder(Encoder)
 
-        func toAny() -> Any {
+        func toAny() throws -> Any {
             switch self {
             case .value(let value):
                 return value
             case .container(let container):
-                return try! container.toAny()
-            case .encoder(let encoder):
-                return try! encoder.container!.toAny()
+                return try container.toAny()
             }
         }
     }
 
     enum Error: Swift.Error {
         case unsupported
-        case incomplete
+        case incomplete(at: [CodingKey])
     }
 
-    final class Encoder: Swift.Encoder {
+    final class Encoder: Swift.Encoder, EncoderContainer {
         let codingPath: [CodingKey]
         let userInfo: [CodingUserInfoKey : Any] = [:]
 
@@ -53,6 +50,14 @@ private extension DictionaryEncoder {
             didSet {
                 precondition(oldValue == nil)
             }
+        }
+
+        func toAny() throws -> Any {
+            guard let container = self.container else {
+                throw Error.incomplete(at: self.codingPath)
+            }
+
+            return try container.toAny()
         }
 
         func container<Key>(keyedBy type: Key.Type) -> KeyedEncodingContainer<Key> where Key : CodingKey {
@@ -75,11 +80,7 @@ private extension DictionaryEncoder {
 
         func encodeToAny<T>(_ value: T) throws -> Any where T : Encodable {
             try value.encode(to: self)
-            guard let container = self.container else {
-                throw Error.incomplete
-            }
-
-            return try container.toAny()
+            return try self.toAny()
         }
     }
 }
@@ -98,7 +99,7 @@ extension DictionaryEncoder {
         private var storage: [String: Storage]
 
         func toAny() throws -> Any {
-            return self.storage.mapValues { $0.toAny() }
+            return try self.storage.mapValues { try $0.toAny() }
         }
 
         init(codingPath: [CodingKey]) {
@@ -194,7 +195,7 @@ extension DictionaryEncoder {
         func superEncoder(forKey key: Key) -> Swift.Encoder {
             let path = self.codingPath.appending(key: key)
             let encoder = Encoder(codingPath: path)
-            self.storage[key.stringValue] = .encoder(encoder)
+            self.storage[key.stringValue] = .container(encoder)
             return encoder
         }
     }
@@ -202,7 +203,7 @@ extension DictionaryEncoder {
     final class UnkeyedContainer : Swift.UnkeyedEncodingContainer, EncoderContainer {
 
         func toAny() throws -> Any {
-            return self.storage.map { $0.toAny() }
+            return try self.storage.map { try $0.toAny() }
         }
 
         // MARK: Properties
@@ -305,7 +306,7 @@ extension DictionaryEncoder {
         func superEncoder() -> Swift.Encoder {
             let path = self.codingPath.appending(index: self.count)
             let encoder = Encoder(codingPath: path)
-            self.storage.append(.encoder(encoder))
+            self.storage.append(.container(encoder))
             return encoder
         }
     }
@@ -314,7 +315,7 @@ extension DictionaryEncoder {
 
         func toAny() throws -> Any {
             guard let value = self.value else {
-                throw DictionaryEncoder.Error.incomplete
+                throw Error.incomplete(at: self.codingPath)
             }
             return value
         }
