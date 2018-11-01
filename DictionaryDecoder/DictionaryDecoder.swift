@@ -21,7 +21,8 @@ public final class DictionaryDecoder {
 private extension DictionaryDecoder {
 
     enum Error: Swift.Error {
-        case invalid(String)
+        case missingValue(at: [CodingKey])
+        case unexpectedValue(at: [CodingKey])
     }
 
     struct Decoder: Swift.Decoder {
@@ -38,7 +39,7 @@ private extension DictionaryDecoder {
 
         func container<Key>(keyedBy type: Key.Type) throws -> KeyedDecodingContainer<Key> where Key : CodingKey {
             guard case .keyed(let storage) = self.storage  else {
-                throw Error.invalid("no storage")
+                throw Error.unexpectedValue(at: self.codingPath)
             }
 
             let keyed = KeyedContainer<Key>(codingPath: self.codingPath,
@@ -48,7 +49,7 @@ private extension DictionaryDecoder {
 
         func unkeyedContainer() throws -> UnkeyedDecodingContainer {
             guard case .unkeyed(let storage) = self.storage  else {
-                throw Error.invalid("no storage")
+                throw Error.unexpectedValue(at: self.codingPath)
             }
 
             return UnkeyedContainer(codingPath: self.codingPath, storage: storage)
@@ -56,7 +57,7 @@ private extension DictionaryDecoder {
 
         func singleValueContainer() throws -> SingleValueDecodingContainer {
             guard case .single(let value) = self.storage  else {
-                throw Error.invalid("no storage")
+                throw Error.unexpectedValue(at: self.codingPath)
             }
 
             return SingleContainer(value: value, codingPath: [])
@@ -69,14 +70,14 @@ private extension DictionaryDecoder {
         }
     }
 
-    // To assist in representing Optional<Any> because Any always casts to Optional<Any>
+    // To assist in representing Optional<Any> because `Any` always casts to Optional<Any>
     enum AnyOptional {
         case none
         case some(Any)
 
-        init(_ any: Any) throws {
+        init?(_ any: Any) {
             guard Mirror(reflecting: any).displayStyle == .optional else {
-                throw Error.invalid("Not Optional type")
+                return nil
             }
 
             if case Optional<Any>.some(let wrapped) = any {
@@ -117,14 +118,16 @@ extension DictionaryDecoder {
 
         func getValue<T>(for key: Key) throws -> T {
             guard let value = storage[key.stringValue] as? T else {
-                throw Error.invalid(key.stringValue)
+                let path = self.codingPath.appending(key: key)
+                throw Error.unexpectedValue(at: path)
             }
             return value
         }
 
         private func getStorage(for key: Key) throws -> Decoder.Storage {
             guard let value = storage[key.stringValue] else {
-                throw Error.invalid(key.stringValue)
+                let path = self.codingPath.appending(key: key)
+                throw Error.missingValue(at: path)
             }
 
             if let keyedValue = value as? [String: Any] {
@@ -140,10 +143,17 @@ extension DictionaryDecoder {
         }
 
         func decodeNil(forKey key: Key) throws -> Bool {
-            guard let value = storage[key.stringValue] else {
-                throw Error.invalid("missing")
+            let path = self.codingPath.appending(key: key)
+            guard
+                let value = storage[key.stringValue] else {
+                throw Error.missingValue(at: path)
             }
-            return try AnyOptional(value).isNone
+
+            guard let optional = AnyOptional(value) else {
+                throw Error.unexpectedValue(at: path)
+            }
+
+            return optional.isNone
         }
 
         func decode(_ type: Bool.Type, forKey key: Key) throws -> Bool {
@@ -260,7 +270,8 @@ extension DictionaryDecoder {
             guard
                 self.isAtEnd == false,
                 let value = self.storage[currentIndex] as? T else {
-                    throw Error.invalid("invalid type")
+                    let path = self.codingPath.appending(index: self.currentIndex)
+                    throw Error.unexpectedValue(at: path)
             }
 
             currentIndex += 1
@@ -280,7 +291,13 @@ extension DictionaryDecoder {
 
         mutating func decodeNil() throws -> Bool {
             let value = try self.getValue() as Any
-            return try AnyOptional(value).isNone
+
+            guard let optional = AnyOptional(value) else {
+                let path = self.codingPath.appending(index: self.currentIndex)
+                throw Error.unexpectedValue(at: path)
+            }
+
+            return optional.isNone
         }
 
         mutating func decode(_ type: Bool.Type) throws -> Bool {
@@ -384,13 +401,13 @@ extension DictionaryDecoder {
         }
 
         func decodeNil() -> Bool {
-            let optional = try? AnyOptional(self.value)
+            let optional = AnyOptional(self.value)
             return optional?.isNone == true
         }
 
         func getValue<T>() throws -> T {
             guard let value = self.value as? T else {
-                throw Error.invalid("invalid type")
+                throw Error.unexpectedValue(at: self.codingPath)
             }
             return value
         }
@@ -452,7 +469,7 @@ extension DictionaryDecoder {
         }
 
         func decode<T>(_ type: T.Type) throws -> T where T : Decodable {
-            let decoder = DictionaryDecoder.Decoder(codingPath: [],
+            let decoder = DictionaryDecoder.Decoder(codingPath: self.codingPath,
                                                     storage: .single(self.value))
 
             return try T.init(from: decoder)
