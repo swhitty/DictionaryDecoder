@@ -13,5 +13,5 @@ struct Person: Decodable {
    var age: Int
 }
 
-let foo = try DictionaryDecoder().decode(Person.self, from: ["name": "Herbert", "age": 99])
+let person = try DictionaryDecoder().decode(Person.self, from: ["name": "Herbert", "age": 99])
 ```
