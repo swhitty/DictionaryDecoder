@@ -3,15 +3,15 @@
 [![Twitter](https://img.shields.io/badge/twitter-@simonwhitty-blue.svg)](http://twitter.com/simonwhitty)
 
 # DictionaryDecoder
-A Swift library for encoding and decoding `Codable` types to `[String: Any]`.
+A Swift library for encoding and decoding `Codable` types to and from `[String: Any]`.
 
 ## Usage
 
 ```swift
-struct Foo: Decodable {
+struct Person: Decodable {
    var name: String
    var age: Int
 }
 
-let foo = try DictionaryDecoder().decode(Foo.self, from: ["name": "Foo", "age": 99])
+let person = try DictionaryDecoder().decode(Person.self, from: ["name": "Herbert", "age": 99])
 ```
