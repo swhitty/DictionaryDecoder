@@ -4,5 +4,5 @@ env:
   matrix:
    - SCRIPT='xcodebuild clean test -project DictionaryDecoder.xcodeproj -scheme DictionaryDecoder -sdk iphonesimulator12.1'
    - SCRIPT='xcodebuild clean test -project DictionaryDecoder.xcodeproj -scheme DictionaryDecoder-macOS -sdk macosx'
-   - SCRIPT='swift package clean; swift test'
+   - SCRIPT='swift test'
 script: $SCRIPT
