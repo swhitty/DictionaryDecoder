@@ -1,5 +1,7 @@
 language: objective-c
 osx_image: xcode10.1
-script:
-	- xcodebuild -project DictionaryDecoder.xcodeproj -scheme "DictionaryDecoder" -sdk iphonesimulator12.1 test
-	- xcodebuild -project DictionaryDecoder.xcodeproj -scheme "DictionaryDecoder-macOS" -sdk macosx test
+env:
+  matrix:
+   - SCHEME='DictionaryDecoder' TEST_SDK=iphonesimulator12.1
+   - SCHEME='DictionaryDecoder-macOS' TEST_SDK=macosx
+script: xcodebuild -project DictionaryDecoder.xcodeproj -scheme $SCHEME -sdk $TEST_SDK test
