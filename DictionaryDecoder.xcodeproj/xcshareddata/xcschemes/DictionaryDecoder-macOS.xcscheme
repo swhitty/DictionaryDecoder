@@ -15,7 +15,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "D9B19677219ACB5500B13AC3"
-               BuildableName = "DictionaryDecoder_macOS.framework"
+               BuildableName = "DictionaryDecoder.framework"
                BlueprintName = "DictionaryDecoder-macOS"
                ReferencedContainer = "container:DictionaryDecoder.xcodeproj">
             </BuildableReference>
@@ -36,7 +36,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "D9B1967F219ACB5500B13AC3"
-               BuildableName = "DictionaryDecoder-macOSTests.xctest"
+               BuildableName = "DictionaryDecoderTests.xctest"
                BlueprintName = "DictionaryDecoder-macOSTests"
                ReferencedContainer = "container:DictionaryDecoder.xcodeproj">
             </BuildableReference>
@@ -46,7 +46,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "D9B19677219ACB5500B13AC3"
-            BuildableName = "DictionaryDecoder_macOS.framework"
+            BuildableName = "DictionaryDecoder.framework"
             BlueprintName = "DictionaryDecoder-macOS"
             ReferencedContainer = "container:DictionaryDecoder.xcodeproj">
          </BuildableReference>
@@ -68,7 +68,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "D9B19677219ACB5500B13AC3"
-            BuildableName = "DictionaryDecoder_macOS.framework"
+            BuildableName = "DictionaryDecoder.framework"
             BlueprintName = "DictionaryDecoder-macOS"
             ReferencedContainer = "container:DictionaryDecoder.xcodeproj">
          </BuildableReference>
@@ -86,7 +86,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "D9B19677219ACB5500B13AC3"
-            BuildableName = "DictionaryDecoder_macOS.framework"
+            BuildableName = "DictionaryDecoder.framework"
             BlueprintName = "DictionaryDecoder-macOS"
             ReferencedContainer = "container:DictionaryDecoder.xcodeproj">
          </BuildableReference>
