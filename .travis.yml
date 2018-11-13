@@ -1,8 +1,13 @@
 language: objective-c
 osx_image: xcode10.1
-env:
-  matrix:
-   - SCRIPT='xcodebuild clean test -project DictionaryDecoder.xcodeproj -scheme DictionaryDecoder -sdk iphonesimulator12.1'
-   - SCRIPT='xcodebuild clean test -project DictionaryDecoder.xcodeproj -scheme DictionaryDecoder-macOS -sdk macosx'
-   - SCRIPT='swift test'
-script: $SCRIPT
+jobs:  
+  include:
+    - stage: test
+      name: iOS
+      script: xcodebuild clean test -project DictionaryDecoder.xcodeproj -scheme DictionaryDecoder -sdk iphonesimulator12.1
+    - stage: test
+      name: macOS
+      script: xcodebuild clean test -project DictionaryDecoder.xcodeproj -scheme DictionaryDecoder-macOS -sdk macosx
+    - stage: test
+      name: Swift PM
+      script: swift package clean; swift test
