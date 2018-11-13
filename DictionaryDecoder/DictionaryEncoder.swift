@@ -81,33 +81,33 @@ private extension DictionaryEncoder {
 
         func toAny() throws -> Any {
             guard let container = self.container else {
-                throw Error.incomplete(at: self.codingPath)
+                throw Error.incomplete(at: codingPath)
             }
 
             return try container.toAny()
         }
 
         func container<Key>(keyedBy type: Key.Type) -> KeyedEncodingContainer<Key> where Key : CodingKey {
-            let keyed = KeyedContainer<Key>(codingPath: self.codingPath)
-            self.container = keyed
+            let keyed = KeyedContainer<Key>(codingPath: codingPath)
+            container = keyed
             return KeyedEncodingContainer(keyed)
         }
 
         func unkeyedContainer() -> UnkeyedEncodingContainer {
-            let unkeyed = UnkeyedContainer(codingPath: self.codingPath)
-            self.container = unkeyed
+            let unkeyed = UnkeyedContainer(codingPath: codingPath)
+            container = unkeyed
             return unkeyed
         }
 
         func singleValueContainer() -> SingleValueEncodingContainer {
-            let single = SingleContainer(codingPath: self.codingPath)
-            self.container = single
+            let single = SingleContainer(codingPath: codingPath)
+            container = single
             return single
         }
 
         func encodeToAny<T>(_ value: T) throws -> Any where T : Encodable {
             try value.encode(to: self)
-            return try self.toAny()
+            return try toAny()
         }
     }
 }
@@ -131,97 +131,97 @@ extension DictionaryEncoder {
         private var storage: [String: Storage]
 
         func toAny() throws -> Any {
-            return try self.storage.mapValues { try $0.toAny() }
+            return try storage.mapValues { try $0.toAny() }
         }
 
         func encodeNil(forKey key: Key) throws {
-            self.storage[key.stringValue] = .value(Optional<Any>.none as Any)
+            storage[key.stringValue] = .value(Optional<Any>.none as Any)
         }
 
         func encode(_ value: Bool, forKey key: Key) throws {
-            self.storage[key.stringValue] = .value(value)
+            storage[key.stringValue] = .value(value)
         }
 
         func encode(_ value: Int, forKey key: Key) throws {
-            self.storage[key.stringValue] = .value(value)
+            storage[key.stringValue] = .value(value)
         }
 
         func encode(_ value: Int8, forKey key: Key) throws {
-            self.storage[key.stringValue] = .value(value)
+            storage[key.stringValue] = .value(value)
         }
 
         func encode(_ value: Int16, forKey key: Key) throws {
-            self.storage[key.stringValue] = .value(value)
+            storage[key.stringValue] = .value(value)
         }
 
         func encode(_ value: Int32, forKey key: Key) throws {
-            self.storage[key.stringValue] = .value(value)
+            storage[key.stringValue] = .value(value)
         }
 
         func encode(_ value: Int64, forKey key: Key) throws {
-            self.storage[key.stringValue] = .value(value)
+            storage[key.stringValue] = .value(value)
         }
 
         func encode(_ value: UInt, forKey key: Key) throws {
-            self.storage[key.stringValue] = .value(value)
+            storage[key.stringValue] = .value(value)
         }
 
         func encode(_ value: UInt8, forKey key: Key) throws {
-            self.storage[key.stringValue] = .value(value)
+            storage[key.stringValue] = .value(value)
         }
 
         func encode(_ value: UInt16, forKey key: Key) throws {
-            self.storage[key.stringValue] = .value(value)
+            storage[key.stringValue] = .value(value)
         }
 
         func encode(_ value: UInt32, forKey key: Key) throws {
-            self.storage[key.stringValue] = .value(value)
+            storage[key.stringValue] = .value(value)
         }
 
         func encode(_ value: UInt64, forKey key: Key) throws {
-            self.storage[key.stringValue] = .value(value)
+            storage[key.stringValue] = .value(value)
         }
 
         func encode(_ value: String, forKey key: Key) throws {
-            self.storage[key.stringValue] = .value(value)
+            storage[key.stringValue] = .value(value)
         }
 
         func encode(_ value: Float, forKey key: Key) throws {
-            self.storage[key.stringValue] = .value(value)
+            storage[key.stringValue] = .value(value)
         }
 
         func encode(_ value: Double, forKey key: Key) throws {
-            self.storage[key.stringValue] = .value(value)
+            storage[key.stringValue] = .value(value)
         }
 
         func encode<T : Encodable>(_ value: T, forKey key: Key) throws {
-            let path = self.codingPath.appending(key: key)
+            let path = codingPath.appending(key: key)
             let result = try Encoder(codingPath: path).encodeToAny(value)
-            self.storage[key.stringValue] = .value(result)
+            storage[key.stringValue] = .value(result)
         }
 
         func nestedContainer<NestedKey>(keyedBy keyType: NestedKey.Type, forKey key: Key) -> KeyedEncodingContainer<NestedKey> {
-            let path = self.codingPath.appending(key: key)
+            let path = codingPath.appending(key: key)
             let keyed = KeyedContainer<NestedKey>(codingPath: path)
-            self.storage[key.stringValue] = .container(keyed)
+            storage[key.stringValue] = .container(keyed)
             return KeyedEncodingContainer(keyed)
         }
 
         func nestedUnkeyedContainer(forKey key: K) -> UnkeyedEncodingContainer {
-            let path = self.codingPath.appending(key: key)
+            let path = codingPath.appending(key: key)
             let unkeyed = UnkeyedContainer(codingPath: path)
-            self.storage[key.stringValue] = .container(unkeyed)
+            storage[key.stringValue] = .container(unkeyed)
             return unkeyed
         }
 
         func superEncoder() -> Swift.Encoder {
-            return self.superEncoder(forKey: Key(stringValue: "super")!)
+            return superEncoder(forKey: Key(stringValue: "super")!)
         }
 
         func superEncoder(forKey key: Key) -> Swift.Encoder {
-            let path = self.codingPath.appending(key: key)
+            let path = codingPath.appending(key: key)
             let encoder = Encoder(codingPath: path)
-            self.storage[key.stringValue] = .container(encoder)
+            storage[key.stringValue] = .container(encoder)
             return encoder
         }
     }
@@ -237,7 +237,7 @@ extension DictionaryEncoder {
         private var storage: [Storage] = []
 
         func toAny() throws -> Any {
-            return try self.storage.map { try $0.toAny() }
+            return try storage.map { try $0.toAny() }
         }
 
         public var count: Int {
@@ -245,89 +245,89 @@ extension DictionaryEncoder {
         }
 
         func encodeNil() throws {
-            self.storage.append(.value(Optional<Any>.none as Any))
+            storage.append(.value(Optional<Any>.none as Any))
         }
 
         func encode(_ value: Bool) throws {
-            self.storage.append(.value(value))
+            storage.append(.value(value))
         }
 
         func encode(_ value: Int) throws {
-            self.storage.append(.value(value))
+            storage.append(.value(value))
         }
 
         func encode(_ value: Int8) throws {
-            self.storage.append(.value(value))
+            storage.append(.value(value))
         }
 
         func encode(_ value: Int16) throws {
-            self.storage.append(.value(value))
+            storage.append(.value(value))
         }
 
         func encode(_ value: Int32) throws {
-            self.storage.append(.value(value))
+            storage.append(.value(value))
         }
 
         func encode(_ value: Int64) throws {
-            self.storage.append(.value(value))
+            storage.append(.value(value))
         }
 
         func encode(_ value: UInt) throws {
-            self.storage.append(.value(value))
+            storage.append(.value(value))
         }
 
         func encode(_ value: UInt8) throws {
-            self.storage.append(.value(value))
+            storage.append(.value(value))
         }
 
         func encode(_ value: UInt16) throws {
-            self.storage.append(.value(value))
+            storage.append(.value(value))
         }
 
         func encode(_ value: UInt32) throws {
-            self.storage.append(.value(value))
+            storage.append(.value(value))
         }
 
         func encode(_ value: UInt64) throws {
-            self.storage.append(.value(value))
+            storage.append(.value(value))
         }
 
         func encode(_ value: String) throws {
-            self.storage.append(.value(value))
+            storage.append(.value(value))
         }
 
         func encode(_ value: Float) throws {
-            self.storage.append(.value(value))
+            storage.append(.value(value))
         }
 
         func encode(_ value: Double) throws {
-            self.storage.append(.value(value))
+            storage.append(.value(value))
         }
 
         func encode<T : Encodable>(_ value: T) throws {
-            let path = self.codingPath.appending(index: self.count)
+            let path = codingPath.appending(index: count)
             let result = try Encoder(codingPath: path).encodeToAny(value)
-            self.storage.append(.value(result))
+            storage.append(.value(result))
         }
 
         func nestedContainer<NestedKey>(keyedBy keyType: NestedKey.Type) -> KeyedEncodingContainer<NestedKey> {
-            let path = self.codingPath.appending(index: self.count)
+            let path = codingPath.appending(index: count)
             let keyed = KeyedContainer<NestedKey>(codingPath: path)
-            self.storage.append(.container(keyed))
+            storage.append(.container(keyed))
             return KeyedEncodingContainer(keyed)
         }
 
         func nestedUnkeyedContainer() -> UnkeyedEncodingContainer {
-            let path = self.codingPath.appending(index: self.count)
+            let path = codingPath.appending(index: count)
             let unkeyed = UnkeyedContainer(codingPath: path)
-            self.storage.append(.container(unkeyed))
+            storage.append(.container(unkeyed))
             return unkeyed
         }
 
         func superEncoder() -> Swift.Encoder {
-            let path = self.codingPath.appending(index: self.count)
+            let path = codingPath.appending(index: count)
             let encoder = Encoder(codingPath: path)
-            self.storage.append(.container(encoder))
+            storage.append(.container(encoder))
             return encoder
         }
     }
@@ -340,78 +340,78 @@ extension DictionaryEncoder {
             self.codingPath = codingPath
         }
 
-        var value: Any?
+        var storage: Any?
 
         func toAny() throws -> Any {
-            guard let value = self.value else {
-                throw Error.incomplete(at: self.codingPath)
+            guard let value = storage else {
+                throw Error.incomplete(at: codingPath)
             }
             return value
         }
 
         func encodeNil() throws {
-            self.value = .some(Optional<Any>.none as Any)
+            storage = .some(Optional<Any>.none as Any)
         }
 
         func encode(_ value: Bool) throws {
-            self.value = value
+            storage = value
         }
 
         func encode(_ value: String) throws {
-            self.value = value
+            storage = value
         }
 
         func encode(_ value: Double) throws {
-            self.value = value
+            storage = value
         }
 
         func encode(_ value: Float) throws {
-            self.value = value
+            storage = value
         }
 
         func encode(_ value: Int) throws {
-            self.value = value
+            storage = value
         }
 
         func encode(_ value: Int8) throws {
-            self.value = value
+            storage = value
         }
 
         func encode(_ value: Int16) throws {
-            self.value = value
+            storage = value
         }
 
         func encode(_ value: Int32) throws {
-            self.value = value
+            storage = value
         }
 
         func encode(_ value: Int64) throws {
-            self.value = value
+            storage = value
         }
 
         func encode(_ value: UInt) throws {
-            self.value = value
+            storage = value
         }
 
         func encode(_ value: UInt8) throws {
-            self.value = value
+            storage = value
         }
 
         func encode(_ value: UInt16) throws {
-            self.value = value
+            storage = value
         }
 
         func encode(_ value: UInt32) throws {
-            self.value = value
+            storage = value
         }
 
         func encode(_ value: UInt64) throws {
-            self.value = value
+            storage = value
         }
 
         func encode<T>(_ value: T) throws where T : Encodable {
-            let encoder = Encoder(codingPath: self.codingPath)
-            self.value = try encoder.encodeToAny(value)
+            let encoder = Encoder(codingPath: codingPath)
+            storage = try encoder.encodeToAny(value)
         }
     }
 }
@@ -432,11 +432,11 @@ extension Array where Element == CodingKey {
 
     struct IndexKey: CodingKey {
         var intValue: Int? {
-            return self.index
+            return index
         }
 
         var stringValue: String {
-            return "Index \(self.index)"
+            return "Index \(index)"
         }
 
         var index: Int
