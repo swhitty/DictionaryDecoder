@@ -64,25 +64,25 @@ private extension DictionaryDecoder {
         }
 
         func container<Key>(keyedBy type: Key.Type) throws -> KeyedDecodingContainer<Key> where Key : CodingKey {
-            guard case .keyed(let storage) = self.storage  else {
-                throw Error.unexpectedValue(at: self.codingPath)
+            guard case .keyed(let storage) = storage  else {
+                throw Error.unexpectedValue(at: codingPath)
             }
 
-            let keyed = KeyedContainer<Key>(codingPath: self.codingPath, storage: storage)
+            let keyed = KeyedContainer<Key>(codingPath: codingPath, storage: storage)
             return KeyedDecodingContainer<Key>(keyed)
         }
 
         func unkeyedContainer() throws -> UnkeyedDecodingContainer {
-            guard case .unkeyed(let storage) = self.storage  else {
-                throw Error.unexpectedValue(at: self.codingPath)
+            guard case .unkeyed(let storage) = storage  else {
+                throw Error.unexpectedValue(at: codingPath)
             }
 
-            return UnkeyedContainer(codingPath: self.codingPath, storage: storage)
+            return UnkeyedContainer(codingPath: codingPath, storage: storage)
         }
 
         func singleValueContainer() throws -> SingleValueDecodingContainer {
-            guard case .single(let value) = self.storage  else {
-                throw Error.unexpectedValue(at: self.codingPath)
+            guard case .single(let value) = storage  else {
+                throw Error.unexpectedValue(at: codingPath)
             }
 
             return SingleContainer(value: value, codingPath: [])
@@ -136,14 +136,14 @@ extension DictionaryDecoder {
         }
 
         var allKeys: [Key] {
-            return self.storage.keys.compactMap {
+            return storage.keys.compactMap {
                 Key(stringValue: $0)
             }
         }
 
         func getValue<T>(for key: Key) throws -> T {
             guard let value = storage[key.stringValue] as? T else {
-                let path = self.codingPath.appending(key: key)
+                let path = codingPath.appending(key: key)
                 throw Error.unexpectedValue(at: path)
             }
             return value
@@ -151,7 +151,7 @@ extension DictionaryDecoder {
 
         private func getStorage(for key: Key) throws -> Decoder.Storage {
             guard let value = storage[key.stringValue] else {
-                let path = self.codingPath.appending(key: key)
+                let path = codingPath.appending(key: key)
                 throw Error.missingValue(at: path)
             }
 
@@ -168,7 +168,7 @@ extension DictionaryDecoder {
         }
 
         func decodeNil(forKey key: Key) throws -> Bool {
-            let path = self.codingPath.appending(key: key)
+            let path = codingPath.appending(key: key)
             guard
                 let value = storage[key.stringValue] else {
                 throw Error.missingValue(at: path)
@@ -244,25 +244,25 @@ extension DictionaryDecoder {
         }
 
         func nestedContainer<NestedKey>(keyedBy type: NestedKey.Type, forKey key: Key) throws -> KeyedDecodingContainer<NestedKey> where NestedKey : CodingKey {
-            let path = self.codingPath.appending(key: key)
+            let path = codingPath.appending(key: key)
             let storage = try getValue(for: key) as [String: Any]
             let keyed = KeyedContainer<NestedKey>(codingPath: path, storage: storage)
             return KeyedDecodingContainer<NestedKey>(keyed)
         }
 
         func nestedUnkeyedContainer(forKey key: Key) throws -> UnkeyedDecodingContainer {
-            let path = self.codingPath.appending(key: key)
+            let path = codingPath.appending(key: key)
             let storage = try getValue(for: key) as [Any]
             return UnkeyedContainer(codingPath: path, storage: storage)
         }
 
         func superDecoder() throws -> Swift.Decoder {
-            return DictionaryDecoder.Decoder(codingPath: self.codingPath, storage: .keyed(self.storage))
+            return DictionaryDecoder.Decoder(codingPath: codingPath, storage: .keyed(storage))
         }
 
         func superDecoder(forKey key: Key) throws -> Swift.Decoder {
             let storage = try getStorage(for: key)
-            return DictionaryDecoder.Decoder(codingPath: self.codingPath, storage: storage)
+            return DictionaryDecoder.Decoder(codingPath: codingPath, storage: storage)
         }
     }
 
@@ -278,20 +278,20 @@ extension DictionaryDecoder {
         }
 
         var count: Int? {
-            return self.storage.count
+            return storage.count
         }
 
         var isAtEnd: Bool {
-            return self.currentIndex == self.storage.count
+            return currentIndex == storage.count
         }
 
         private(set) var currentIndex: Int = 0
 
         mutating func getValue<T>() throws -> T {
             guard
-                self.isAtEnd == false,
-                let value = self.storage[currentIndex] as? T else {
-                    let path = self.codingPath.appending(index: self.currentIndex)
+                isAtEnd == false,
+                let value = storage[currentIndex] as? T else {
+                    let path = codingPath.appending(index: currentIndex)
                     throw Error.unexpectedValue(at: path)
             }
 
@@ -300,7 +300,7 @@ extension DictionaryDecoder {
         }
 
         private mutating func getStorage() throws -> Decoder.Storage {
-            let value = try self.getValue() as Any
+            let value = try getValue() as Any
 
             if let keyedValue = value as? [String: Any] {
                 return .keyed(keyedValue)
@@ -311,10 +311,10 @@ extension DictionaryDecoder {
         }
 
         mutating func decodeNil() throws -> Bool {
-            let value = try self.getValue() as Any
+            let value = try getValue() as Any
 
             guard let optional = AnyOptional(value) else {
-                let path = self.codingPath.appending(index: self.currentIndex)
+                let path = codingPath.appending(index: currentIndex)
                 throw Error.unexpectedValue(at: path)
             }
 
@@ -322,64 +322,64 @@ extension DictionaryDecoder {
         }
 
         mutating func decode(_ type: Bool.Type) throws -> Bool {
-            return try self.getValue()
+            return try getValue()
         }
 
         mutating func decode(_ type: String.Type) throws -> String {
-            return try self.getValue()
+            return try getValue()
         }
 
         mutating func decode(_ type: Double.Type) throws -> Double {
-            return try self.getValue()
+            return try getValue()
         }
 
         mutating func decode(_ type: Float.Type) throws -> Float {
-            return try self.getValue()
+            return try getValue()
         }
 
         mutating func decode(_ type: Int.Type) throws -> Int {
-            return try self.getValue()
+            return try getValue()
         }
 
         mutating func decode(_ type: Int8.Type) throws -> Int8 {
-            return try self.getValue()
+            return try getValue()
         }
 
         mutating func decode(_ type: Int16.Type) throws -> Int16 {
-            return try self.getValue()
+            return try getValue()
         }
 
         mutating func decode(_ type: Int32.Type) throws -> Int32 {
-            return try self.getValue()
+            return try getValue()
         }
 
         mutating func decode(_ type: Int64.Type) throws -> Int64 {
-            return try self.getValue()
+            return try getValue()
         }
 
         mutating func decode(_ type: UInt.Type) throws -> UInt {
-            return try self.getValue()
+            return try getValue()
         }
 
         mutating func decode(_ type: UInt8.Type) throws -> UInt8 {
-            return try self.getValue()
+            return try getValue()
         }
 
         mutating func decode(_ type: UInt16.Type) throws -> UInt16 {
-            return try self.getValue()
+            return try getValue()
         }
 
         mutating func decode(_ type: UInt32.Type) throws -> UInt32 {
-            return try self.getValue()
+            return try getValue()
         }
 
         mutating func decode(_ type: UInt64.Type) throws -> UInt64 {
-            return try self.getValue()
+            return try getValue()
         }
 
         mutating func decode<T>(_ type: T.Type) throws -> T where T : Decodable {
-            let path = self.codingPath.appending(index: self.currentIndex)
-            let storage = try self.getStorage()
+            let path = codingPath.appending(index: currentIndex)
+            let storage = try getStorage()
             let decoder = DictionaryDecoder.Decoder(codingPath: path,
                                                     storage: storage)
 
@@ -387,22 +387,22 @@ extension DictionaryDecoder {
         }
 
         mutating func nestedContainer<NestedKey>(keyedBy type: NestedKey.Type) throws -> KeyedDecodingContainer<NestedKey> where NestedKey : CodingKey {
-            let path = self.codingPath.appending(index: self.currentIndex)
-            let storage = try self.getStorage()
+            let path = codingPath.appending(index: currentIndex)
+            let storage = try getStorage()
             let decoder = DictionaryDecoder.Decoder(codingPath: path, storage: storage)
             return try decoder.container(keyedBy: type)
         }
 
         mutating func nestedUnkeyedContainer() throws -> UnkeyedDecodingContainer {
-            let path = self.codingPath.appending(index: self.currentIndex)
-            let storage = try self.getStorage()
+            let path = codingPath.appending(index: currentIndex)
+            let storage = try getStorage()
             let decoder = DictionaryDecoder.Decoder(codingPath: path, storage: storage)
             return try decoder.unkeyedContainer()
         }
 
         mutating func superDecoder() throws -> Swift.Decoder {
-            let path = self.codingPath.appending(index: self.currentIndex)
-            let storage = try self.getStorage()
+            let path = codingPath.appending(index: currentIndex)
+            let storage = try getStorage()
             return DictionaryDecoder.Decoder(codingPath: path, storage: storage)
         }
     }
@@ -419,75 +419,75 @@ extension DictionaryDecoder {
         }
 
         func decodeNil() -> Bool {
-            let optional = AnyOptional(self.value)
+            let optional = AnyOptional(value)
             return optional?.isNone == true
         }
 
         func getValue<T>() throws -> T {
             guard let value = self.value as? T else {
-                throw Error.unexpectedValue(at: self.codingPath)
+                throw Error.unexpectedValue(at: codingPath)
             }
             return value
         }
 
         func decode(_ type: Bool.Type) throws -> Bool {
-            return try self.getValue()
+            return try getValue()
         }
 
         func decode(_ type: String.Type) throws -> String {
-            return try self.getValue()
+            return try getValue()
         }
 
         func decode(_ type: Double.Type) throws -> Double {
-            return try self.getValue()
+            return try getValue()
         }
 
         func decode(_ type: Float.Type) throws -> Float {
-             return try self.getValue()
+             return try getValue()
         }
 
         func decode(_ type: Int.Type) throws -> Int {
-            return try self.getValue()
+            return try getValue()
         }
 
         func decode(_ type: Int8.Type) throws -> Int8 {
-            return try self.getValue()
+            return try getValue()
         }
 
         func decode(_ type: Int16.Type) throws -> Int16 {
-            return try self.getValue()
+            return try getValue()
         }
 
         func decode(_ type: Int32.Type) throws -> Int32 {
-            return try self.getValue()
+            return try getValue()
         }
 
         func decode(_ type: Int64.Type) throws -> Int64 {
-            return try self.getValue()
+            return try getValue()
         }
 
         func decode(_ type: UInt.Type) throws -> UInt {
-            return try self.getValue()
+            return try getValue()
         }
 
         func decode(_ type: UInt8.Type) throws -> UInt8 {
-            return try self.getValue()
+            return try getValue()
         }
 
         func decode(_ type: UInt16.Type) throws -> UInt16 {
-            return try self.getValue()
+            return try getValue()
         }
 
         func decode(_ type: UInt32.Type) throws -> UInt32 {
-             return try self.getValue()
+             return try getValue()
         }
 
         func decode(_ type: UInt64.Type) throws -> UInt64 {
-            return try self.getValue()
+            return try getValue()
         }
 
         func decode<T>(_ type: T.Type) throws -> T where T : Decodable {
-            let decoder = DictionaryDecoder.Decoder(codingPath: self.codingPath, storage: .single(self.value))
+            let decoder = DictionaryDecoder.Decoder(codingPath: codingPath, storage: .single(value))
 
             return try T.init(from: decoder)
         }
