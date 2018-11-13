@@ -29,7 +29,7 @@
 //  3. This notice may not be removed or altered from any source distribution.
 //
 
-#import <UIKit/UIKit.h>
+#import <Foundation/Foundation.h>
 
 //! Project version number for DictionaryDecoder.
 FOUNDATION_EXPORT double DictionaryDecoderVersionNumber;
