@@ -3,7 +3,7 @@
 [![Twitter](https://img.shields.io/badge/twitter-@simonwhitty-blue.svg)](http://twitter.com/simonwhitty)
 
 # DictionaryDecoder
-A Swift library for encoding and decoding `Codable` types to and from `[String: Any]`.
+A Swift library for serializing `Codable` types to and from `[String: Any]`.
 
 ## Usage
 
