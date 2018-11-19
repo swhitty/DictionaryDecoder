@@ -82,8 +82,10 @@ final class DictionaryDecoderTests: XCTestCase {
         let container = DictionaryDecoder.makeKeyedContainer(storage: ["key": Float(10.0)])
         XCTAssertEqual(try container.decode(Float.self, forKey: "key"), 10.0)
 
-        let another = DictionaryDecoder.makeKeyedContainer(storage: ["key": 100])
-        XCTAssertThrowsError(try another.decode(Float.self, forKey: "key"))
+        let another = DictionaryDecoder.makeKeyedContainer(storage: ["int": 100,
+                                                                     "overflow": Double(Float.greatestFiniteMagnitude) + 1])
+        XCTAssertThrowsError(try another.decode(Float.self, forKey: "int"))
+        XCTAssertThrowsError(try another.decode(Float.self, forKey: "overflow"))
         XCTAssertThrowsError(try another.decode(Float.self, forKey: "missing"))
     }
 
@@ -100,8 +102,10 @@ final class DictionaryDecoderTests: XCTestCase {
         let container = DictionaryDecoder.makeKeyedContainer(storage: ["key": Int8(10)])
         XCTAssertEqual(try container.decode(Int8.self, forKey: "key"), 10)
 
-        let another = DictionaryDecoder.makeKeyedContainer(storage: ["key": 100.0])
+        let another = DictionaryDecoder.makeKeyedContainer(storage: ["key": 100.0,
+                                                                     "overflow": Int16(Int8.max) + 1])
         XCTAssertThrowsError(try another.decode(Int8.self, forKey: "key"))
+        XCTAssertThrowsError(try another.decode(Int8.self, forKey: "overflow"))
         XCTAssertThrowsError(try another.decode(Int8.self, forKey: "missing"))
     }
 
@@ -109,8 +113,10 @@ final class DictionaryDecoderTests: XCTestCase {
         let container = DictionaryDecoder.makeKeyedContainer(storage: ["key": Int16(10)])
         XCTAssertEqual(try container.decode(Int16.self, forKey: "key"), 10)
 
-        let another = DictionaryDecoder.makeKeyedContainer(storage: ["key": 100.0])
+        let another = DictionaryDecoder.makeKeyedContainer(storage: ["key": 100.0,
+                                                                     "overflow": Int32(Int16.max) + 1])
         XCTAssertThrowsError(try another.decode(Int16.self, forKey: "key"))
+        XCTAssertThrowsError(try another.decode(Int16.self, forKey: "overflow"))
         XCTAssertThrowsError(try another.decode(Int16.self, forKey: "missing"))
     }
 
@@ -118,8 +124,10 @@ final class DictionaryDecoderTests: XCTestCase {
         let container = DictionaryDecoder.makeKeyedContainer(storage: ["key": Int32(10)])
         XCTAssertEqual(try container.decode(Int32.self, forKey: "key"), 10)
 
-        let another = DictionaryDecoder.makeKeyedContainer(storage: ["key": 100.0])
+        let another = DictionaryDecoder.makeKeyedContainer(storage: ["key": 100.0,
+                                                                     "overflow": Int64(Int32.max) + 1])
         XCTAssertThrowsError(try another.decode(Int32.self, forKey: "key"))
+        XCTAssertThrowsError(try another.decode(Int32.self, forKey: "overflow"))
         XCTAssertThrowsError(try another.decode(Int32.self, forKey: "missing"))
     }
 
@@ -145,8 +153,10 @@ final class DictionaryDecoderTests: XCTestCase {
         let container = DictionaryDecoder.makeKeyedContainer(storage: ["key": UInt8(10)])
         XCTAssertEqual(try container.decode(UInt8.self, forKey: "key"), 10)
 
-        let another = DictionaryDecoder.makeKeyedContainer(storage: ["key": 100.0])
+        let another = DictionaryDecoder.makeKeyedContainer(storage: ["key": 100.0,
+                                                                     "overflow": UInt16(UInt8.max) + 1])
         XCTAssertThrowsError(try another.decode(UInt8.self, forKey: "key"))
+        XCTAssertThrowsError(try another.decode(UInt8.self, forKey: "overflow"))
         XCTAssertThrowsError(try another.decode(UInt8.self, forKey: "missing"))
     }
 
@@ -154,17 +164,21 @@ final class DictionaryDecoderTests: XCTestCase {
         let container = DictionaryDecoder.makeKeyedContainer(storage: ["key": UInt16(10)])
         XCTAssertEqual(try container.decode(UInt16.self, forKey: "key"), 10)
 
-        let another = DictionaryDecoder.makeKeyedContainer(storage: ["key": 100.0])
+        let another = DictionaryDecoder.makeKeyedContainer(storage: ["key": 100.0,
+                                                                     "overflow": UInt32(UInt16.max) + 1])
         XCTAssertThrowsError(try another.decode(UInt16.self, forKey: "key"))
+        XCTAssertThrowsError(try another.decode(UInt16.self, forKey: "overflow"))
         XCTAssertThrowsError(try another.decode(UInt16.self, forKey: "missing"))
     }
 
     func testKeyedContainerDecodesUInt32() throws {
-        let container = DictionaryDecoder.makeKeyedContainer(storage: ["key": UInt32(10)])
+        let container = DictionaryDecoder.makeKeyedContainer(storage: ["key": UInt32(10),
+                                                                       "overflow": UInt64(UInt32.max) + 1])
         XCTAssertEqual(try container.decode(UInt32.self, forKey: "key"), 10)
 
         let another = DictionaryDecoder.makeKeyedContainer(storage: ["key": 100.0])
         XCTAssertThrowsError(try another.decode(UInt32.self, forKey: "key"))
+        XCTAssertThrowsError(try another.decode(UInt32.self, forKey: "overflow"))
         XCTAssertThrowsError(try another.decode(UInt32.self, forKey: "missing"))
     }
 
