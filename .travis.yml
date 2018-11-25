@@ -8,6 +8,7 @@ jobs:
     - stage: test
       name: macOS
       script: xcodebuild clean test -project DictionaryDecoder.xcodeproj -scheme DictionaryDecoder-macOS -sdk macosx
+      after_success: bash <(curl -s https://codecov.io/bash)
     - stage: test
       name: Swift PM
       script: swift package clean; swift test
