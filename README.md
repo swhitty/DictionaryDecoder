@@ -7,7 +7,6 @@
 A Swift library for serializing `Codable` types to and from `[String: Any]`.
 
 ## Usage
-
 ```swift
 struct Person: Decodable {
    var name: String
