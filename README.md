@@ -1,4 +1,5 @@
 [![Travis](https://img.shields.io/travis/swhitty/DictionaryDecoder.svg)](https://travis-ci.org/swhitty/DictionaryDecoder)
+[![CodeCov](https://codecov.io/gh/swhitty/DictionaryDecoder/branch/master/graphs/badge.svg)](https://codecov.io/gh/swhitty/DictionaryDecoder/branch/master)
 [![License](https://img.shields.io/badge/license-zlib-lightgrey.svg)](https://opensource.org/licenses/Zlib)
 [![Twitter](https://img.shields.io/badge/twitter-@simonwhitty-blue.svg)](http://twitter.com/simonwhitty)
 
