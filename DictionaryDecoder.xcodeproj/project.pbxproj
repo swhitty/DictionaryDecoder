@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		D913F18621AB67E900B76B06 /* UserDefaults+Codable.swift in Sources */ = {isa = PBXBuildFile; fileRef = D913F18521AB67E900B76B06 /* UserDefaults+Codable.swift */; };
+		D913F18721AB67E900B76B06 /* UserDefaults+Codable.swift in Sources */ = {isa = PBXBuildFile; fileRef = D913F18521AB67E900B76B06 /* UserDefaults+Codable.swift */; };
+		D913F18921ABD6AD00B76B06 /* UserDefaults+CodableTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D913F18821ABD6AD00B76B06 /* UserDefaults+CodableTests.swift */; };
+		D913F18A21ABD6AD00B76B06 /* UserDefaults+CodableTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D913F18821ABD6AD00B76B06 /* UserDefaults+CodableTests.swift */; };
 		D98C49A5218A497D0035E516 /* DictionaryDecoder.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D98C499B218A497D0035E516 /* DictionaryDecoder.framework */; };
 		D98C49AC218A497D0035E516 /* DictionaryDecoder.h in Headers */ = {isa = PBXBuildFile; fileRef = D98C499E218A497D0035E516 /* DictionaryDecoder.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		D98C49B7218A49C50035E516 /* DictionaryDecoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = D98C49B5218A49C50035E516 /* DictionaryDecoder.swift */; };
@@ -39,6 +43,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		D913F18521AB67E900B76B06 /* UserDefaults+Codable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UserDefaults+Codable.swift"; sourceTree = "<group>"; };
+		D913F18821ABD6AD00B76B06 /* UserDefaults+CodableTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UserDefaults+CodableTests.swift"; sourceTree = "<group>"; };
 		D98C499B218A497D0035E516 /* DictionaryDecoder.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = DictionaryDecoder.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D98C499E218A497D0035E516 /* DictionaryDecoder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DictionaryDecoder.h; sourceTree = "<group>"; };
 		D98C499F218A497D0035E516 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -113,6 +119,7 @@
 				D98C499F218A497D0035E516 /* Info.plist */,
 				D98C49B5218A49C50035E516 /* DictionaryDecoder.swift */,
 				D98C49B6218A49C50035E516 /* DictionaryEncoder.swift */,
+				D913F18521AB67E900B76B06 /* UserDefaults+Codable.swift */,
 			);
 			name = DictionaryDecoder;
 			path = Sources;
@@ -121,9 +128,10 @@
 		D98C49A8218A497D0035E516 /* DictionaryDecoderTests */ = {
 			isa = PBXGroup;
 			children = (
+				D98C49AB218A497D0035E516 /* Info.plist */,
 				D98C49B9218A49E20035E516 /* DictionaryDecoderTests.swift */,
 				D98C49BA218A49E20035E516 /* DictionaryEncoderTests.swift */,
-				D98C49AB218A497D0035E516 /* Info.plist */,
+				D913F18821ABD6AD00B76B06 /* UserDefaults+CodableTests.swift */,
 			);
 			name = DictionaryDecoderTests;
 			path = Tests;
@@ -306,6 +314,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D98C49B8218A49C50035E516 /* DictionaryEncoder.swift in Sources */,
+				D913F18621AB67E900B76B06 /* UserDefaults+Codable.swift in Sources */,
 				D98C49B7218A49C50035E516 /* DictionaryDecoder.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -315,6 +324,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D98C49BC218A49E20035E516 /* DictionaryEncoderTests.swift in Sources */,
+				D913F18921ABD6AD00B76B06 /* UserDefaults+CodableTests.swift in Sources */,
 				D98C49BB218A49E20035E516 /* DictionaryDecoderTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -324,6 +334,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D9B19690219ACB5C00B13AC3 /* DictionaryEncoder.swift in Sources */,
+				D913F18721AB67E900B76B06 /* UserDefaults+Codable.swift in Sources */,
 				D9B1968F219ACB5C00B13AC3 /* DictionaryDecoder.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -333,6 +344,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D9B19692219ACD1E00B13AC3 /* DictionaryEncoderTests.swift in Sources */,
+				D913F18A21ABD6AD00B76B06 /* UserDefaults+CodableTests.swift in Sources */,
 				D9B19691219ACD1E00B13AC3 /* DictionaryDecoderTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
