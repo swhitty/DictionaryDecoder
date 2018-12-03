@@ -17,6 +17,6 @@
     "tvos": "9.0",
     "osx": "10.10"
   },
-  "source_files": "Sources/*.swift",
+  "source_files": "Sources/*",
   "swift_version": "4.0"
 }
