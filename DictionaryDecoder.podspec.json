@@ -6,7 +6,7 @@
   "authors": "Simon Whitty",
   "license": {
     "type": "zlib",
-    "file": "LICENCE.txt"
+    "file": "LICENSE.txt"
   },
   "source": {
     "git": "https://github.com/swhitty/DictionaryDecoder.git",
