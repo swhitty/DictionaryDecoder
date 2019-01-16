@@ -18,5 +18,5 @@
     "osx": "10.10"
   },
   "source_files": "Sources/*.swift",
-  "swift_version": "4.0"
+  "swift_version": "4.2"
 }
