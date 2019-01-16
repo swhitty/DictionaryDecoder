@@ -37,19 +37,19 @@ import XCTest
 final class UserDefaultsCodableTests: XCTestCase {
 
     func testThrowsWhenKeyMissing() throws {
-        let defaults = UserDefaults(suiteName: "mock")!
+        let defaults = UserDefaults.makeMock()
         defaults.set(nil, forKey: "person")
         XCTAssertThrowsError(try defaults.decode(Person.self, forKey: "person"))
     }
 
     func testThrowsWhenInvalidDictionary() throws {
-        let defaults = UserDefaults(suiteName: "mock")!
+        let defaults = UserDefaults.makeMock()
         defaults.set(["name": 99, "age": "Herbert"], forKey: "person")
         XCTAssertThrowsError(try defaults.decode(Person.self, forKey: "person"))
     }
 
     func testCanDecode() throws {
-        let defaults = UserDefaults(suiteName: "mock")!
+        let defaults = UserDefaults.makeMock()
         defaults.set(["name": "Herbert", "age": 99], forKey: "person")
 
         let person = try defaults.decode(Person.self, forKey: "person")
@@ -57,7 +57,7 @@ final class UserDefaultsCodableTests: XCTestCase {
     }
 
     func testCanEncode() throws {
-        let defaults = UserDefaults(suiteName: "mock")!
+        let defaults = UserDefaults.makeMock()
         defaults.set(nil, forKey: "person")
 
         XCTAssertNil(defaults.object(forKey: "person"))
@@ -67,9 +67,30 @@ final class UserDefaultsCodableTests: XCTestCase {
         XCTAssertEqual(dictionary?["name"] as? String, "Joyce")
         XCTAssertEqual(dictionary?["age"] as? Int, 21)
     }
+
+    func testCanEncodeOptional() throws {
+        let defaults = UserDefaults.makeMock()
+
+        XCTAssertNil(defaults.object(forKey: "person"))
+        var person: Person? = Person(name: "Joyce", age: 21)
+        try defaults.encode(person, forKey: "person")
+        XCTAssertNotNil(defaults.object(forKey: "person"))
+
+        person = nil
+        try defaults.encode(person, forKey: "person")
+        XCTAssertNil(defaults.object(forKey: "person"))
+    }
 }
 
 private struct Person: Codable, Equatable {
     var name: String
     var age: Int
+}
+
+private extension UserDefaults {
+
+    static func makeMock() -> UserDefaults {
+        UserDefaults().removePersistentDomain(forName: "mock")
+        return UserDefaults(suiteName: "mock")!
+    }
 }

@@ -37,6 +37,15 @@ public extension UserDefaults {
         set(dictionary, forKey: key)
     }
 
+    func encode<T: Encodable>(_ value: T?, forKey key: String) throws {
+        switch value {
+        case .some(let value):
+            try encode(value, forKey: key)
+        case .none:
+            set(nil, forKey: key)
+        }
+    }
+
     func decode<T: Decodable>(_ type: T.Type, forKey key: String) throws -> T {
         guard let dictionary = dictionary(forKey: key) else {
             throw Error.invalid
