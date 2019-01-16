@@ -80,6 +80,17 @@ final class UserDefaultsCodableTests: XCTestCase {
         try defaults.encode(person, forKey: "person")
         XCTAssertNil(defaults.object(forKey: "person"))
     }
+
+    func testCanDecodeOptional() throws {
+        let defaults = UserDefaults.makeMock()
+
+        XCTAssertNil(defaults.object(forKey: "person"))
+        XCTAssertNil(try defaults.decode(Optional<Person>.self, forKey: "person"))
+
+        defaults.set(["name": "Herbert", "age": 99], forKey: "person")
+        let person = try defaults.decode(Optional<Person>.self, forKey: "person")
+        XCTAssertEqual(person, Person(name: "Herbert", age: 99))
+    }
 }
 
 private struct Person: Codable, Equatable {
