@@ -44,6 +44,7 @@
 
 /* Begin PBXFileReference section */
 		D908D8CD21F14B5100835102 /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
+		D908D8CE21F14D0B00835102 /* DictionaryDecoder.podspec.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = DictionaryDecoder.podspec.json; sourceTree = "<group>"; };
 		D913F18521AB67E900B76B06 /* UserDefaults+Codable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UserDefaults+Codable.swift"; sourceTree = "<group>"; };
 		D913F18821ABD6AD00B76B06 /* UserDefaults+CodableTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UserDefaults+CodableTests.swift"; sourceTree = "<group>"; };
 		D98C499B218A497D0035E516 /* DictionaryDecoder.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = DictionaryDecoder.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -97,6 +98,7 @@
 			isa = PBXGroup;
 			children = (
 				D908D8CD21F14B5100835102 /* LICENSE */,
+				D908D8CE21F14D0B00835102 /* DictionaryDecoder.podspec.json */,
 				D98C499D218A497D0035E516 /* DictionaryDecoder */,
 				D98C49A8218A497D0035E516 /* DictionaryDecoderTests */,
 				D98C499C218A497D0035E516 /* Products */,
