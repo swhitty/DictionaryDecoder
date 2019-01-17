@@ -1,16 +1,16 @@
 {
   "name": "DictionaryDecoder",
-  "version": "0.9.4",
+  "version": "0.10.0",
   "summary": "A Swift library for encoding and decoding Codable types to [String: Any].",
   "homepage": "https://github.com/swhitty/DictionaryDecoder",
   "authors": "Simon Whitty",
   "license": {
-    "type": "zlib",
-    "file": "LICENSE.txt"
+    "type": "mit",
+    "file": "LICENSE"
   },
   "source": {
     "git": "https://github.com/swhitty/DictionaryDecoder.git",
-    "tag": "0.9.4"
+    "tag": "0.10.0"
   },
   "platforms": {
     "ios": "9.0",
