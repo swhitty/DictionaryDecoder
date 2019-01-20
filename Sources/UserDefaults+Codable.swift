@@ -55,7 +55,7 @@ public extension UserDefaults {
     }
 
     func decode<T: Decodable>(_ type: Optional<T>.Type, forKey key: String) throws -> T? {
-        guard value(forKey: key) == nil else {
+        guard object(forKey: key) == nil else {
             return try decode(T.self, forKey: key)
         }
         return nil
