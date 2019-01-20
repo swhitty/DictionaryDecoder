@@ -43,7 +43,7 @@ public extension UserDefaults {
         case .some(let value):
             try encode(value, forKey: key)
         case .none:
-            set(nil, forKey: key)
+            removeObject(forKey: key)
         }
     }
 
