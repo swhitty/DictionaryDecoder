@@ -10,8 +10,11 @@ let package = Package(
         ),
     ],
     targets: [
-        .target(name: "DictionaryDecoder", path: "Sources"),
-        .testTarget(name: "DictionaryDecoderTests", dependencies: ["DictionaryDecoder"], path: "Tests"),
+        .target(name: "DictionaryDecoder",
+				path: "Sources"),
+        .testTarget(name: "DictionaryDecoderTests",
+					dependencies: ["DictionaryDecoder"],
+					path: "Tests"),
     ]
 )
 
