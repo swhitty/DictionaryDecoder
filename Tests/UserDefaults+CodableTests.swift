@@ -38,7 +38,7 @@ final class UserDefaultsCodableTests: XCTestCase {
 
     func testThrowsWhenKeyMissing() throws {
         let defaults = UserDefaults.makeMock()
-        defaults.set(nil, forKey: "person")
+        defaults.removeObject(forKey: "person")
         XCTAssertThrowsError(try defaults.decode(Person.self, forKey: "person"))
     }
 
@@ -58,7 +58,7 @@ final class UserDefaultsCodableTests: XCTestCase {
 
     func testCanEncode() throws {
         let defaults = UserDefaults.makeMock()
-        defaults.set(nil, forKey: "person")
+        defaults.removeObject(forKey: "person")
 
         XCTAssertNil(defaults.object(forKey: "person"))
         try defaults.encode(Person(name: "Joyce", age: 21), forKey: "person")

@@ -3,5 +3,6 @@ import XCTest
 import DictionaryDecoderTests
 
 var tests = [XCTestCaseEntry]()
-tests += DictionaryDecoderTests.allTests()
+tests += DictionaryDecoderTests.__allTests()
+
 XCTMain(tests)
