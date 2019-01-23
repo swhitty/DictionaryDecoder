@@ -134,6 +134,17 @@ extension DictionaryEncoderTests {
     ]
 }
 
+extension NSUbiquitousKeyValueStoreCodableTests {
+    static let __allTests = [
+        ("testCanDecode", testCanDecode),
+        ("testCanDecodeOptional", testCanDecodeOptional),
+        ("testCanEncode", testCanEncode),
+        ("testCanEncodeOptional", testCanEncodeOptional),
+        ("testThrowsWhenInvalidDictionary", testThrowsWhenInvalidDictionary),
+        ("testThrowsWhenKeyMissing", testThrowsWhenKeyMissing),
+    ]
+}
+
 extension UserDefaultsCodableTests {
     static let __allTests = [
         ("testCanDecode", testCanDecode),
@@ -150,6 +161,7 @@ public func __allTests() -> [XCTestCaseEntry] {
     return [
         testCase(DictionaryDecoderTests.__allTests),
         testCase(DictionaryEncoderTests.__allTests),
+        testCase(NSUbiquitousKeyValueStoreCodableTests.__allTests),
         testCase(UserDefaultsCodableTests.__allTests),
     ]
 }
