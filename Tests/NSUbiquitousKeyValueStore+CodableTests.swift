@@ -98,18 +98,9 @@ private struct Person: Codable, Equatable {
     var age: Int
 }
 
-private extension UserDefaults {
-
-    static func makeMock() -> UserDefaults {
-        UserDefaults().removePersistentDomain(forName: "mock")
-        return UserDefaults(suiteName: "mock")!
-    }
-}
-
 private extension NSUbiquitousKeyValueStore {
     
     static func makeMock() -> NSUbiquitousKeyValueStore {
         return NSUbiquitousKeyValueStore()
     }
-
 }
