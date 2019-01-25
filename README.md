@@ -14,17 +14,20 @@ struct Person: Codable {
    var age: Int
 }
 
-let person = try DictionaryDecoder().decode(Person.self, from: ["name": "Herbert", "age": 99])
+let person = try DictionaryDecoder().decode(Person.self, from: [
+   "name": "Herbert",
+   "age": 99
+   ])
 ```
 
 ## UserDefaults
-Store any `Encodable` type to UserDefaults.
+Store and retrieve any `Codable` type within UserDefaults.
 ```swift
 let person = Person(name: "Herbert", age: 99)
-try UserDefaults.standard.encode(person, forKey: "owner")
-```
 
-Retrieve any `Decodable` type from UserDefaults.
-```swift
+//persist values
+try UserDefaults.standard.encode(person, forKey: "owner")
+
+//retrieve values
 let owner = try UserDefaults.standard.decode(Person.self, forKey: "owner")
 ```
