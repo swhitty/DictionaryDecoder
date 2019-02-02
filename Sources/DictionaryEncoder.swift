@@ -195,6 +195,11 @@ extension DictionaryEncoder {
         }
 
         func encode<T : Encodable>(_ value: T, forKey key: Key) throws {
+            guard T.self != Date.self else {
+                storage[key.stringValue] = .value(value)
+                return
+            }
+
             let path = codingPath.appending(key: key)
             let result = try Encoder(codingPath: path).encodeToAny(value)
             storage[key.stringValue] = .value(result)
@@ -305,6 +310,11 @@ extension DictionaryEncoder {
         }
 
         func encode<T : Encodable>(_ value: T) throws {
+            guard T.self != Date.self else {
+                storage.append(.value(value))
+                return
+            }
+
             let path = codingPath.appending(index: count)
             let result = try Encoder(codingPath: path).encodeToAny(value)
             storage.append(.value(result))
@@ -410,6 +420,11 @@ extension DictionaryEncoder {
         }
 
         func encode<T>(_ value: T) throws where T : Encodable {
+            guard T.self != Date.self else {
+                storage = value
+                return
+            }
+
             let encoder = Encoder(codingPath: codingPath)
             storage = try encoder.encodeToAny(value)
         }

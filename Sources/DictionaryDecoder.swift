@@ -237,6 +237,10 @@ extension DictionaryDecoder {
         }
 
         func decode<T>(_ type: T.Type, forKey key: Key) throws -> T where T : Decodable {
+            guard T.self != Date.self else {
+                return try getValue(for: key)
+            }
+
             let storage = try getStorage(for: key)
             let decoder = DictionaryDecoder.Decoder(codingPath: [], storage: storage)
             return try T.init(from: decoder)
@@ -377,6 +381,10 @@ extension DictionaryDecoder {
         }
 
         mutating func decode<T>(_ type: T.Type) throws -> T where T : Decodable {
+            guard T.self != Date.self else {
+                return try getValue()
+            }
+
             let path = codingPath.appending(index: currentIndex)
             let storage = try getStorage()
             let decoder = DictionaryDecoder.Decoder(codingPath: path,
@@ -486,8 +494,11 @@ extension DictionaryDecoder {
         }
 
         func decode<T>(_ type: T.Type) throws -> T where T : Decodable {
-            let decoder = DictionaryDecoder.Decoder(codingPath: codingPath, storage: .single(value))
+            guard T.self != Date.self else {
+                return try getValue()
+            }
 
+            let decoder = DictionaryDecoder.Decoder(codingPath: codingPath, storage: .single(value))
             return try T.init(from: decoder)
         }
     }

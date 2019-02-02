@@ -191,6 +191,15 @@ final class DictionaryDecoderTests: XCTestCase {
         XCTAssertThrowsError(try another.decode(UInt64.self, forKey: "missing"))
     }
 
+    func testKeyedContainerDecodesDate() throws {
+        let container = DictionaryDecoder.makeKeyedContainer(storage: ["key": Date.distantPast])
+        XCTAssertEqual(try container.decode(Date.self, forKey: "key"), Date.distantPast)
+
+        let another = DictionaryDecoder.makeKeyedContainer(storage: ["key": 100.0])
+        XCTAssertThrowsError(try another.decode(Date.self, forKey: "key"))
+        XCTAssertThrowsError(try another.decode(Date.self, forKey: "missing"))
+    }
+
     func testKeyedContainerContainsKeys() {
         let keyed = DictionaryDecoder.makeKeyedContainer(storage: ["blah": 2])
 
@@ -415,6 +424,14 @@ final class DictionaryDecoderTests: XCTestCase {
         XCTAssertThrowsError(try another.decode(UInt64.self))
     }
 
+    func testUnkeyedContainerDecodesDate() throws {
+        var container = DictionaryDecoder.makeUnkeyedContainer([Date.distantPast])
+        XCTAssertEqual(try container.decode(Date.self), Date.distantPast)
+
+        var another = DictionaryDecoder.makeUnkeyedContainer([100.0])
+        XCTAssertThrowsError(try another.decode(Date.self))
+    }
+
     func testUnkeyedContainerDecodesNestedKeyed() throws {
         var container = DictionaryDecoder.makeUnkeyedContainer([["title": "Lowlands"], ["title": "Highlands"]])
 
@@ -603,6 +620,14 @@ final class DictionaryDecoderTests: XCTestCase {
 
         let another = DictionaryDecoder.makeSingleContainer("100")
         XCTAssertThrowsError(try another.decode(UInt64.self))
+    }
+
+    func testSingleContainerDecodesDate() throws {
+        let container = DictionaryDecoder.makeSingleContainer(Date.distantPast)
+        XCTAssertEqual(try container.decode(Date.self), Date.distantPast)
+
+        let another = DictionaryDecoder.makeSingleContainer("100")
+        XCTAssertThrowsError(try another.decode(Date.self))
     }
 
     func testSingleContainerDecodesDecodable() throws {

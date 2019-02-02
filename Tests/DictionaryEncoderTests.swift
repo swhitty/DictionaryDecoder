@@ -194,6 +194,14 @@ final class DictionaryEncoderTests: XCTestCase {
         XCTAssertEqual(result, ["key": "test"])
     }
 
+    func testKeyedContainerEncodesDate() throws {
+        let container = DictionaryEncoder.makeKeyedContainer()
+
+        try container.encode(Date.distantPast, forKey: "key")
+        let result = try container.toAny() as? [String: Date]
+        XCTAssertEqual(result, ["key": Date.distantPast])
+    }
+
     func testKeyedContainerEncodesNestedKeyed() throws {
         let container = DictionaryEncoder.makeKeyedContainer()
 
@@ -381,6 +389,14 @@ final class DictionaryEncoderTests: XCTestCase {
         XCTAssertEqual(result, ["test"])
     }
 
+    func testUnkeyedContainerEncodesDate() throws {
+        let container = DictionaryEncoder.makeUnkeyedContainer()
+
+        try container.encode(Date.distantPast)
+        let result = try container.toAny() as? [Date]
+        XCTAssertEqual(result, [Date.distantPast])
+    }
+
     func testUnkeyedContainerEncodesNestedKeyed() throws {
         let container = DictionaryEncoder.makeUnkeyedContainer()
 
@@ -522,6 +538,13 @@ final class DictionaryEncoderTests: XCTestCase {
         XCTAssertEqual(try container.toAny() as? Double, Double(10))
     }
 
+    func testSingleContainerEncodesDate() throws {
+        let container = DictionaryEncoder.makeSingleContainer()
+
+        try container.encode(Date.distantPast)
+        XCTAssertEqual(try container.toAny() as? Date, Date.distantPast)
+    }
+
     func testSingleContainerEncodesType() throws {
         let container = DictionaryEncoder.makeSingleContainer()
 
@@ -543,14 +566,6 @@ private extension DictionaryEncoder {
     static func makeSingleContainer() -> DictionaryEncoder.SingleContainer {
         return DictionaryEncoder.SingleContainer(codingPath: [])
     }
-
-    //    static func makeUnkeyedContainer(_ storage: [Any]) -> UnkeyedDecodingContainer {
-    //        return DictionaryDecoder.UnkeyedContainer(storage: storage, codingPath: [], currentIndex: 0)
-    //    }
-    //
-    //    static func makeSingleContainer(_ value: Any) -> SingleValueDecodingContainer {
-    //        return DictionaryDecoder.SingleContainer(value: value, codingPath: [])
-    //    }
 }
 
 private extension DictionaryEncoderTests {
