@@ -35,7 +35,7 @@ public final class DictionaryEncoder {
 
     public init () { }
 
-    public func encode<T>(_ value: T) throws -> [String: Any] where T : Encodable {
+    public func encode<T>(_ value: T) throws -> [String: Any] where T: Encodable {
         guard let dictionary = try Encoder().encodeToAny(value) as? [String: Any] else {
             throw Error.unsupported
         }
@@ -67,7 +67,7 @@ private extension DictionaryEncoder {
 
     final class Encoder: Swift.Encoder, EncoderContainer {
         let codingPath: [CodingKey]
-        let userInfo: [CodingUserInfoKey : Any] = [:]
+        let userInfo: [CodingUserInfoKey: Any] = [:]
 
         init(codingPath: [CodingKey] = []) {
             self.codingPath = codingPath
@@ -87,7 +87,7 @@ private extension DictionaryEncoder {
             return try container.toAny()
         }
 
-        func container<Key>(keyedBy type: Key.Type) -> KeyedEncodingContainer<Key> where Key : CodingKey {
+        func container<Key>(keyedBy type: Key.Type) -> KeyedEncodingContainer<Key> where Key: CodingKey {
             let keyed = KeyedContainer<Key>(codingPath: codingPath)
             container = keyed
             return KeyedEncodingContainer(keyed)
@@ -105,10 +105,14 @@ private extension DictionaryEncoder {
             return single
         }
 
-        func encodeToAny<T>(_ value: T) throws -> Any where T : Encodable {
+        func encodeToAny<T>(_ value: T) throws -> Any where T: Encodable {
             try value.encode(to: self)
             return try toAny()
         }
+    }
+
+    static func isSupportedType<T>(_ type: T.Type) -> Bool where T: Encodable {
+        return T.self == Date.self
     }
 }
 
@@ -118,7 +122,7 @@ private protocol EncoderContainer {
 
 extension DictionaryEncoder {
 
-    final class KeyedContainer<K : CodingKey>: KeyedEncodingContainerProtocol, EncoderContainer {
+    final class KeyedContainer<K: CodingKey>: KeyedEncodingContainerProtocol, EncoderContainer {
         typealias Key = K
 
         public let codingPath: [CodingKey]
@@ -194,8 +198,8 @@ extension DictionaryEncoder {
             storage[key.stringValue] = .value(value)
         }
 
-        func encode<T : Encodable>(_ value: T, forKey key: Key) throws {
-            guard T.self != Date.self else {
+        func encode<T: Encodable>(_ value: T, forKey key: Key) throws {
+            guard DictionaryEncoder.isSupportedType(T.self) == false else {
                 storage[key.stringValue] = .value(value)
                 return
             }
@@ -231,7 +235,7 @@ extension DictionaryEncoder {
         }
     }
 
-    final class UnkeyedContainer : Swift.UnkeyedEncodingContainer, EncoderContainer {
+    final class UnkeyedContainer: Swift.UnkeyedEncodingContainer, EncoderContainer {
 
         public let codingPath: [CodingKey]
 
@@ -309,8 +313,8 @@ extension DictionaryEncoder {
             storage.append(.value(value))
         }
 
-        func encode<T : Encodable>(_ value: T) throws {
-            guard T.self != Date.self else {
+        func encode<T: Encodable>(_ value: T) throws {
+            guard DictionaryEncoder.isSupportedType(T.self) == false else {
                 storage.append(.value(value))
                 return
             }
@@ -419,8 +423,8 @@ extension DictionaryEncoder {
             storage = value
         }
 
-        func encode<T>(_ value: T) throws where T : Encodable {
-            guard T.self != Date.self else {
+        func encode<T>(_ value: T) throws where T: Encodable {
+            guard DictionaryEncoder.isSupportedType(T.self) == false else {
                 storage = value
                 return
             }
