@@ -54,7 +54,7 @@ private extension DictionaryDecoder {
 
         var storage: Storage
         var codingPath: [CodingKey]
-        var userInfo: [CodingUserInfoKey : Any]
+        var userInfo: [CodingUserInfoKey: Any]
 
         init(codingPath: [CodingKey], storage: Storage) {
             self.codingPath = codingPath
@@ -62,7 +62,7 @@ private extension DictionaryDecoder {
             self.userInfo = [:]
         }
 
-        func container<Key>(keyedBy type: Key.Type) throws -> KeyedDecodingContainer<Key> where Key : CodingKey {
+        func container<Key>(keyedBy type: Key.Type) throws -> KeyedDecodingContainer<Key> where Key: CodingKey {
             guard case .keyed(let storage) = storage  else {
                 throw Error.unexpectedValue(at: codingPath)
             }
@@ -119,6 +119,10 @@ private extension DictionaryDecoder {
                 return false
             }
         }
+    }
+
+    static func isSupportedType<T>(_ type: T.Type) -> Bool where T: Decodable {
+        return T.self == Date.self
     }
 }
 
@@ -236,8 +240,8 @@ extension DictionaryDecoder {
             return try getValue(for: key)
         }
 
-        func decode<T>(_ type: T.Type, forKey key: Key) throws -> T where T : Decodable {
-            guard T.self != Date.self else {
+        func decode<T>(_ type: T.Type, forKey key: Key) throws -> T where T: Decodable {
+            guard DictionaryDecoder.isSupportedType(T.self) == false else {
                 return try getValue(for: key)
             }
 
@@ -246,7 +250,7 @@ extension DictionaryDecoder {
             return try T.init(from: decoder)
         }
 
-        func nestedContainer<NestedKey>(keyedBy type: NestedKey.Type, forKey key: Key) throws -> KeyedDecodingContainer<NestedKey> where NestedKey : CodingKey {
+        func nestedContainer<NestedKey>(keyedBy type: NestedKey.Type, forKey key: Key) throws -> KeyedDecodingContainer<NestedKey> where NestedKey: CodingKey {
             let path = codingPath.appending(key: key)
             let storage = try getValue(for: key) as [String: Any]
             let keyed = KeyedContainer<NestedKey>(codingPath: path, storage: storage)
@@ -380,8 +384,8 @@ extension DictionaryDecoder {
             return try getValue()
         }
 
-        mutating func decode<T>(_ type: T.Type) throws -> T where T : Decodable {
-            guard T.self != Date.self else {
+        mutating func decode<T>(_ type: T.Type) throws -> T where T: Decodable {
+            guard DictionaryDecoder.isSupportedType(T.self) == false else {
                 return try getValue()
             }
 
@@ -393,7 +397,7 @@ extension DictionaryDecoder {
             return try T.init(from: decoder)
         }
 
-        mutating func nestedContainer<NestedKey>(keyedBy type: NestedKey.Type) throws -> KeyedDecodingContainer<NestedKey> where NestedKey : CodingKey {
+        mutating func nestedContainer<NestedKey>(keyedBy type: NestedKey.Type) throws -> KeyedDecodingContainer<NestedKey> where NestedKey: CodingKey {
             let path = codingPath.appending(index: currentIndex)
             let storage = try getStorage()
             let decoder = DictionaryDecoder.Decoder(codingPath: path, storage: storage)
@@ -493,8 +497,8 @@ extension DictionaryDecoder {
             return try getValue()
         }
 
-        func decode<T>(_ type: T.Type) throws -> T where T : Decodable {
-            guard T.self != Date.self else {
+        func decode<T>(_ type: T.Type) throws -> T where T: Decodable {
+            guard DictionaryDecoder.isSupportedType(T.self) == false else {
                 return try getValue()
             }
 
