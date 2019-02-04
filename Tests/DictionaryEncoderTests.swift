@@ -194,12 +194,28 @@ final class DictionaryEncoderTests: XCTestCase {
         XCTAssertEqual(result, ["key": "test"])
     }
 
+    func testKeyedContainerEncodesData() throws {
+        let container = DictionaryEncoder.makeKeyedContainer()
+
+        try container.encode(Data.mock, forKey: "key")
+        let result = try container.toAny() as? [String: Data]
+        XCTAssertEqual(result, ["key": Data.mock])
+    }
+
     func testKeyedContainerEncodesDate() throws {
         let container = DictionaryEncoder.makeKeyedContainer()
 
         try container.encode(Date.distantPast, forKey: "key")
         let result = try container.toAny() as? [String: Date]
         XCTAssertEqual(result, ["key": Date.distantPast])
+    }
+
+    func testKeyedContainerEncodesURL() throws {
+        let container = DictionaryEncoder.makeKeyedContainer()
+
+        try container.encode(URL.mock, forKey: "key")
+        let result = try container.toAny() as? [String: URL]
+        XCTAssertEqual(result, ["key": URL.mock])
     }
 
     func testKeyedContainerEncodesNestedKeyed() throws {
@@ -389,12 +405,28 @@ final class DictionaryEncoderTests: XCTestCase {
         XCTAssertEqual(result, ["test"])
     }
 
+    func testUnkeyedContainerEncodesData() throws {
+        let container = DictionaryEncoder.makeUnkeyedContainer()
+
+        try container.encode(Data.mock)
+        let result = try container.toAny() as? [Data]
+        XCTAssertEqual(result, [Data.mock])
+    }
+
     func testUnkeyedContainerEncodesDate() throws {
         let container = DictionaryEncoder.makeUnkeyedContainer()
 
         try container.encode(Date.distantPast)
         let result = try container.toAny() as? [Date]
         XCTAssertEqual(result, [Date.distantPast])
+    }
+
+    func testUnkeyedContainerEncodesURL() throws {
+        let container = DictionaryEncoder.makeUnkeyedContainer()
+
+        try container.encode(URL.mock)
+        let result = try container.toAny() as? [URL]
+        XCTAssertEqual(result, [URL.mock])
     }
 
     func testUnkeyedContainerEncodesNestedKeyed() throws {
@@ -538,11 +570,25 @@ final class DictionaryEncoderTests: XCTestCase {
         XCTAssertEqual(try container.toAny() as? Double, Double(10))
     }
 
+    func testSingleContainerEncodesData() throws {
+        let container = DictionaryEncoder.makeSingleContainer()
+
+        try container.encode(Data.mock)
+        XCTAssertEqual(try container.toAny() as? Data, Data.mock)
+    }
+
     func testSingleContainerEncodesDate() throws {
         let container = DictionaryEncoder.makeSingleContainer()
 
         try container.encode(Date.distantPast)
         XCTAssertEqual(try container.toAny() as? Date, Date.distantPast)
+    }
+
+    func testSingleContainerEncodesURL() throws {
+        let container = DictionaryEncoder.makeSingleContainer()
+
+        try container.encode(URL.mock)
+        XCTAssertEqual(try container.toAny() as? URL, URL.mock)
     }
 
     func testSingleContainerEncodesType() throws {

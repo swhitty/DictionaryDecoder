@@ -191,6 +191,15 @@ final class DictionaryDecoderTests: XCTestCase {
         XCTAssertThrowsError(try another.decode(UInt64.self, forKey: "missing"))
     }
 
+    func testKeyedContainerDecodesData() throws {
+        let container = DictionaryDecoder.makeKeyedContainer(storage: ["key": Data.mock])
+        XCTAssertEqual(try container.decode(Data.self, forKey: "key"), Data.mock)
+
+        let another = DictionaryDecoder.makeKeyedContainer(storage: ["key": 100.0])
+        XCTAssertThrowsError(try another.decode(Data.self, forKey: "key"))
+        XCTAssertThrowsError(try another.decode(Data.self, forKey: "missing"))
+    }
+
     func testKeyedContainerDecodesDate() throws {
         let container = DictionaryDecoder.makeKeyedContainer(storage: ["key": Date.distantPast])
         XCTAssertEqual(try container.decode(Date.self, forKey: "key"), Date.distantPast)
@@ -198,6 +207,15 @@ final class DictionaryDecoderTests: XCTestCase {
         let another = DictionaryDecoder.makeKeyedContainer(storage: ["key": 100.0])
         XCTAssertThrowsError(try another.decode(Date.self, forKey: "key"))
         XCTAssertThrowsError(try another.decode(Date.self, forKey: "missing"))
+    }
+
+    func testKeyedContainerDecodesURL() throws {
+        let container = DictionaryDecoder.makeKeyedContainer(storage: ["key": URL.mock])
+        XCTAssertEqual(try container.decode(URL.self, forKey: "key"), URL.mock)
+
+        let another = DictionaryDecoder.makeKeyedContainer(storage: ["key": 100.0])
+        XCTAssertThrowsError(try another.decode(URL.self, forKey: "key"))
+        XCTAssertThrowsError(try another.decode(URL.self, forKey: "missing"))
     }
 
     func testKeyedContainerContainsKeys() {
@@ -424,12 +442,28 @@ final class DictionaryDecoderTests: XCTestCase {
         XCTAssertThrowsError(try another.decode(UInt64.self))
     }
 
+    func testUnkeyedContainerDecodesData() throws {
+        var container = DictionaryDecoder.makeUnkeyedContainer([Data.mock])
+        XCTAssertEqual(try container.decode(Data.self), Data.mock)
+
+        var another = DictionaryDecoder.makeUnkeyedContainer([100.0])
+        XCTAssertThrowsError(try another.decode(Data.self))
+    }
+
     func testUnkeyedContainerDecodesDate() throws {
         var container = DictionaryDecoder.makeUnkeyedContainer([Date.distantPast])
         XCTAssertEqual(try container.decode(Date.self), Date.distantPast)
 
         var another = DictionaryDecoder.makeUnkeyedContainer([100.0])
         XCTAssertThrowsError(try another.decode(Date.self))
+    }
+
+    func testUnkeyedContainerDecodesURL() throws {
+        var container = DictionaryDecoder.makeUnkeyedContainer([URL.mock])
+        XCTAssertEqual(try container.decode(URL.self), URL.mock)
+
+        var another = DictionaryDecoder.makeUnkeyedContainer([100.0])
+        XCTAssertThrowsError(try another.decode(URL.self))
     }
 
     func testUnkeyedContainerDecodesNestedKeyed() throws {
@@ -622,12 +656,28 @@ final class DictionaryDecoderTests: XCTestCase {
         XCTAssertThrowsError(try another.decode(UInt64.self))
     }
 
+    func testSingleContainerDecodesData() throws {
+        let container = DictionaryDecoder.makeSingleContainer(Data.mock)
+        XCTAssertEqual(try container.decode(Data.self), Data.mock)
+
+        let another = DictionaryDecoder.makeSingleContainer("100")
+        XCTAssertThrowsError(try another.decode(Data.self))
+    }
+
     func testSingleContainerDecodesDate() throws {
         let container = DictionaryDecoder.makeSingleContainer(Date.distantPast)
         XCTAssertEqual(try container.decode(Date.self), Date.distantPast)
 
         let another = DictionaryDecoder.makeSingleContainer("100")
         XCTAssertThrowsError(try another.decode(Date.self))
+    }
+
+    func testSingleContainerDecodesURL() throws {
+        let container = DictionaryDecoder.makeSingleContainer(URL.mock)
+        XCTAssertEqual(try container.decode(URL.self), URL.mock)
+
+        let another = DictionaryDecoder.makeSingleContainer("100")
+        XCTAssertThrowsError(try another.decode(URL.self))
     }
 
     func testSingleContainerDecodesDecodable() throws {
@@ -687,5 +737,19 @@ struct AnyCodingKey: CodingKey, ExpressibleByStringLiteral {
     init?(intValue: Int) {
         self.init(stringValue: String(intValue))
         self.intValue = intValue
+    }
+}
+
+extension Data {
+
+    static var mock: Data {
+        return Data(repeating: 255, count: 4)
+    }
+}
+
+extension URL {
+
+    static var mock: URL {
+        return URL(string: "https://www.whileloop.com")!
     }
 }

@@ -122,7 +122,10 @@ private extension DictionaryDecoder {
     }
 
     static func isSupportedType<T>(_ type: T.Type) -> Bool where T: Decodable {
-        return T.self == Date.self
+        return
+            T.self == Data.self ||
+            T.self == Date.self ||
+            T.self == URL.self
     }
 }
 
