@@ -113,9 +113,10 @@ private extension DictionaryEncoder {
 
     static func isSupportedType<T>(_ type: T.Type) -> Bool where T: Encodable {
         return
-            T.self == Data.self ||
-            T.self == Date.self ||
-            T.self == URL.self
+            T.self == Data.self || T.self == NSData.self ||
+            T.self == Date.self || T.self == NSDate.self ||
+            T.self == Decimal.self || T.self == NSDecimalNumber.self ||
+            T.self == URL.self || T.self == NSURL.self
     }
 }
 
