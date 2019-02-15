@@ -14,10 +14,16 @@ struct Person: Codable {
    var age: Int
 }
 
-let person = try DictionaryDecoder().decode(Person.self, from: [
-   "name": "Herbert",
-   "age": 99
-   ])
+// Decode from [String: Any]
+let person = try DictionaryDecoder()
+		.decode(Person.self,
+						from: [
+							"name": "Herbert",
+   	 					"age": 99
+						])
+
+// Encode to [String: Any]
+let dict = try DictionaryEncoder().encode(person)
 ```
 
 ## UserDefaults
@@ -25,9 +31,20 @@ Store and retrieve any `Codable` type within UserDefaults.
 ```swift
 let person = Person(name: "Herbert", age: 99)
 
-//persist values
+// Persist values
 try UserDefaults.standard.encode(person, forKey: "owner")
 
-//retrieve values
+// Retrieve values
 let owner = try UserDefaults.standard.decode(Person.self, forKey: "owner")
+```
+
+Types are persisted within friendly `[String: Any]` representations;
+
+```swift
+
+let defaults = UserDefaults.standard.dictionaryRepresentation
+
+let owner = defaults["owner"]
+// owner == ["name": "Herber", "age": 99]
+
 ```
