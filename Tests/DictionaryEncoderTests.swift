@@ -597,20 +597,31 @@ final class DictionaryEncoderTests: XCTestCase {
         try container.encode(ErrorCode.invalid)
         XCTAssertEqual(try container.toAny() as? String, "invalid")
     }
+
+    func testEncoderUserInfo() throws {
+        let encoder = DictionaryEncoder()
+        let firstEdition = Edition(version: 1)
+
+        encoder.userInfo = [.version: 1]
+        XCTAssertNoThrow(_ = try encoder.encode(firstEdition))
+
+        encoder.userInfo = [.version: 2]
+        XCTAssertThrowsError(_ = try encoder.encode(firstEdition))
+    }
 }
 
 private extension DictionaryEncoder {
 
     static func makeKeyedContainer() -> DictionaryEncoder.KeyedContainer<AnyCodingKey> {
-        return DictionaryEncoder.KeyedContainer<AnyCodingKey>(codingPath: [])
+        return DictionaryEncoder.KeyedContainer<AnyCodingKey>(codingPath: [], userInfo: [:])
     }
 
     static func makeUnkeyedContainer() -> DictionaryEncoder.UnkeyedContainer {
-        return DictionaryEncoder.UnkeyedContainer(codingPath: [])
+        return DictionaryEncoder.UnkeyedContainer(codingPath: [], userInfo: [:])
     }
 
     static func makeSingleContainer() -> DictionaryEncoder.SingleContainer {
-        return DictionaryEncoder.SingleContainer(codingPath: [])
+        return DictionaryEncoder.SingleContainer(codingPath: [], userInfo: [:])
     }
 }
 

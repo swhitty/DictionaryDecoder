@@ -33,11 +33,14 @@ import Foundation
 
 public final class DictionaryDecoder {
 
-    public init () { }
+    public var userInfo: [CodingUserInfoKey: Any]
+
+    public init () {
+        self.userInfo = [:]
+    }
 
     public func decode<T: Decodable>(_ type: T.Type, from dictionary: [String: Any]) throws -> T {
-
-        let decoder = Decoder(codingPath: [], storage: .keyed(dictionary))
+        let decoder = Decoder(codingPath: [], storage: .keyed(dictionary), userInfo: userInfo)
         return try T.init(from: decoder)
     }
 }
@@ -52,14 +55,14 @@ private extension DictionaryDecoder {
 
     struct Decoder: Swift.Decoder {
 
-        var storage: Storage
-        var codingPath: [CodingKey]
-        var userInfo: [CodingUserInfoKey: Any]
+        let storage: Storage
+        let codingPath: [CodingKey]
+        let userInfo: [CodingUserInfoKey: Any]
 
-        init(codingPath: [CodingKey], storage: Storage) {
+        init(codingPath: [CodingKey], storage: Storage, userInfo: [CodingUserInfoKey: Any]) {
             self.codingPath = codingPath
             self.storage = storage
-            self.userInfo = [:]
+            self.userInfo = userInfo
         }
 
         func container<Key>(keyedBy type: Key.Type) throws -> KeyedDecodingContainer<Key> where Key: CodingKey {
@@ -67,7 +70,9 @@ private extension DictionaryDecoder {
                 throw Error.unexpectedValue(at: codingPath)
             }
 
-            let keyed = KeyedContainer<Key>(codingPath: codingPath, storage: storage)
+            let keyed = KeyedContainer<Key>(codingPath: codingPath,
+                                            storage: storage,
+                                            userInfo: userInfo)
             return KeyedDecodingContainer<Key>(keyed)
         }
 
@@ -76,7 +81,9 @@ private extension DictionaryDecoder {
                 throw Error.unexpectedValue(at: codingPath)
             }
 
-            return UnkeyedContainer(codingPath: codingPath, storage: storage)
+            return UnkeyedContainer(codingPath: codingPath,
+                                    storage: storage,
+                                    userInfo: userInfo)
         }
 
         func singleValueContainer() throws -> SingleValueDecodingContainer {
@@ -84,7 +91,9 @@ private extension DictionaryDecoder {
                 throw Error.unexpectedValue(at: codingPath)
             }
 
-            return SingleContainer(value: value, codingPath: [])
+            return SingleContainer(value: value,
+                                   codingPath: [],
+                                   userInfo: userInfo)
         }
 
         enum Storage {
@@ -135,11 +144,13 @@ extension DictionaryDecoder {
     struct KeyedContainer<Key: CodingKey>: KeyedDecodingContainerProtocol {
 
         let storage: [String: Any]
-        var codingPath: [CodingKey]
+        let codingPath: [CodingKey]
+        private let userInfo: [CodingUserInfoKey: Any]
 
-        init(codingPath: [CodingKey], storage: [String: Any]) {
+        init(codingPath: [CodingKey], storage: [String: Any], userInfo: [CodingUserInfoKey: Any]) {
             self.codingPath = codingPath
             self.storage = storage
+            self.userInfo = userInfo
         }
 
         var allKeys: [Key] {
@@ -250,42 +261,52 @@ extension DictionaryDecoder {
             }
 
             let storage = try getStorage(for: key)
-            let decoder = DictionaryDecoder.Decoder(codingPath: [], storage: storage)
+            let decoder = DictionaryDecoder.Decoder(codingPath: [], storage: storage, userInfo: userInfo)
             return try T.init(from: decoder)
         }
 
         func nestedContainer<NestedKey>(keyedBy type: NestedKey.Type, forKey key: Key) throws -> KeyedDecodingContainer<NestedKey> where NestedKey: CodingKey {
             let path = codingPath.appending(key: key)
             let storage = try getValue(for: key) as [String: Any]
-            let keyed = KeyedContainer<NestedKey>(codingPath: path, storage: storage)
+            let keyed = KeyedContainer<NestedKey>(codingPath: path,
+                                                  storage: storage,
+                                                  userInfo: userInfo)
             return KeyedDecodingContainer<NestedKey>(keyed)
         }
 
         func nestedUnkeyedContainer(forKey key: Key) throws -> UnkeyedDecodingContainer {
             let path = codingPath.appending(key: key)
             let storage = try getValue(for: key) as [Any]
-            return UnkeyedContainer(codingPath: path, storage: storage)
+            return UnkeyedContainer(codingPath: path,
+                                    storage: storage,
+                                    userInfo: userInfo)
         }
 
         func superDecoder() throws -> Swift.Decoder {
-            return DictionaryDecoder.Decoder(codingPath: codingPath, storage: .keyed(storage))
+            return DictionaryDecoder.Decoder(codingPath: codingPath,
+                                             storage: .keyed(storage),
+                                             userInfo: userInfo)
         }
 
         func superDecoder(forKey key: Key) throws -> Swift.Decoder {
             let storage = try getStorage(for: key)
-            return DictionaryDecoder.Decoder(codingPath: codingPath, storage: storage)
+            return DictionaryDecoder.Decoder(codingPath: codingPath,
+                                             storage: storage,
+                                             userInfo: userInfo)
         }
     }
 
     struct UnkeyedContainer: UnkeyedDecodingContainer {
 
-        private(set) var storage: [Any]
+        let codingPath: [CodingKey]
+        private let userInfo: [CodingUserInfoKey: Any]
 
-        private(set) var codingPath: [CodingKey]
+        let storage: [Any]
 
-        init(codingPath: [CodingKey], storage: [Any]) {
+        init(codingPath: [CodingKey], storage: [Any], userInfo: [CodingUserInfoKey: Any]) {
             self.codingPath = codingPath
             self.storage = storage
+            self.userInfo = userInfo
         }
 
         var count: Int? {
@@ -396,7 +417,8 @@ extension DictionaryDecoder {
             let path = codingPath.appending(index: currentIndex)
             let storage = try getStorage()
             let decoder = DictionaryDecoder.Decoder(codingPath: path,
-                                                    storage: storage)
+                                                    storage: storage,
+                                                    userInfo: userInfo)
 
             return try T.init(from: decoder)
         }
@@ -404,33 +426,41 @@ extension DictionaryDecoder {
         mutating func nestedContainer<NestedKey>(keyedBy type: NestedKey.Type) throws -> KeyedDecodingContainer<NestedKey> where NestedKey: CodingKey {
             let path = codingPath.appending(index: currentIndex)
             let storage = try getStorage()
-            let decoder = DictionaryDecoder.Decoder(codingPath: path, storage: storage)
+            let decoder = DictionaryDecoder.Decoder(codingPath: path,
+                                                    storage: storage,
+                                                    userInfo: userInfo)
             return try decoder.container(keyedBy: type)
         }
 
         mutating func nestedUnkeyedContainer() throws -> UnkeyedDecodingContainer {
             let path = codingPath.appending(index: currentIndex)
             let storage = try getStorage()
-            let decoder = DictionaryDecoder.Decoder(codingPath: path, storage: storage)
+            let decoder = DictionaryDecoder.Decoder(codingPath: path,
+                                                    storage: storage,
+                                                    userInfo: userInfo)
             return try decoder.unkeyedContainer()
         }
 
         mutating func superDecoder() throws -> Swift.Decoder {
             let path = codingPath.appending(index: currentIndex)
             let storage = try getStorage()
-            return DictionaryDecoder.Decoder(codingPath: path, storage: storage)
+            return DictionaryDecoder.Decoder(codingPath: path,
+                                             storage: storage,
+                                             userInfo: userInfo)
         }
     }
 
     struct SingleContainer: SingleValueDecodingContainer {
 
-        private(set) var codingPath: [CodingKey]
+        let codingPath: [CodingKey]
+        private let userInfo: [CodingUserInfoKey: Any]
 
         private var value: Any
 
-        init(value: Any, codingPath: [CodingKey]) {
+        init(value: Any, codingPath: [CodingKey], userInfo: [CodingUserInfoKey: Any]) {
             self.value = value
             self.codingPath = codingPath
+            self.userInfo = userInfo
         }
 
         func decodeNil() -> Bool {
@@ -506,7 +536,9 @@ extension DictionaryDecoder {
                 return try getValue()
             }
 
-            let decoder = DictionaryDecoder.Decoder(codingPath: codingPath, storage: .single(value))
+            let decoder = DictionaryDecoder.Decoder(codingPath: codingPath,
+                                                    storage: .single(value),
+                                                    userInfo: userInfo)
             return try T.init(from: decoder)
         }
     }

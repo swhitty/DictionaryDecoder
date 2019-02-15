@@ -687,6 +687,16 @@ final class DictionaryDecoderTests: XCTestCase {
         let another = DictionaryDecoder.makeSingleContainer("other")
         XCTAssertThrowsError(try another.decode(ErrorCode.self))
     }
+
+    func testDecoderUserInfo() throws {
+        let decoder = DictionaryDecoder()
+
+        decoder.userInfo = [.version: 1]
+        XCTAssertEqual(try decoder.decode(Edition.self, from: [:]).version, 1)
+
+        decoder.userInfo = [.version: 2]
+        XCTAssertEqual(try decoder.decode(Edition.self, from: [:]).version, 2)
+    }
 }
 
 
@@ -707,15 +717,21 @@ private extension DictionaryDecoderTests {
 private extension DictionaryDecoder {
 
     static func makeKeyedContainer(storage: [String: Any]) -> DictionaryDecoder.KeyedContainer<AnyCodingKey> {
-        return DictionaryDecoder.KeyedContainer<AnyCodingKey>(codingPath: [], storage: storage)
+        return DictionaryDecoder.KeyedContainer<AnyCodingKey>(codingPath: [],
+                                                              storage: storage,
+                                                              userInfo: [:])
     }
 
     static func makeUnkeyedContainer(_ storage: [Any]) -> UnkeyedDecodingContainer {
-        return DictionaryDecoder.UnkeyedContainer(codingPath: [], storage: storage)
+        return DictionaryDecoder.UnkeyedContainer(codingPath: [],
+                                                  storage: storage,
+                                                  userInfo: [:])
     }
 
     static func makeSingleContainer(_ value: Any) -> SingleValueDecodingContainer {
-        return DictionaryDecoder.SingleContainer(value: value, codingPath: [])
+        return DictionaryDecoder.SingleContainer(value: value,
+                                                 codingPath: [],
+                                                 userInfo: [:])
     }
 }
 
@@ -751,5 +767,45 @@ extension URL {
 
     static var mock: URL {
         return URL(string: "https://www.whileloop.com")!
+    }
+}
+
+extension CodingUserInfoKey {
+
+    static var version: CodingUserInfoKey {
+        return CodingUserInfoKey(rawValue: "version")!
+    }
+}
+
+struct Edition: Codable {
+    var version: Int
+
+    init(version: Int) {
+        self.version = version
+    }
+
+    init(from decoder: Decoder) throws {
+        guard let version = decoder.userInfo[.version] as? Int else {
+            throw Error.invalid
+        }
+        self.version = version
+    }
+
+    func encode(to encoder: Encoder) throws {
+        guard
+            let version = encoder.userInfo[.version] as? Int,
+            version == self.version else {
+            throw Error.invalid
+        }
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(version, forKey: .version)
+    }
+
+    enum CodingKeys: CodingKey {
+        case version
+    }
+
+    enum Error: Swift.Error {
+        case invalid
     }
 }

@@ -33,10 +33,14 @@ import Foundation
 
 public final class DictionaryEncoder {
 
-    public init () { }
+    public var userInfo: [CodingUserInfoKey: Any]
+
+    public init () {
+        self.userInfo = [:]
+    }
 
     public func encode<T>(_ value: T) throws -> [String: Any] where T: Encodable {
-        guard let dictionary = try Encoder().encodeToAny(value) as? [String: Any] else {
+        guard let dictionary = try Encoder(userInfo: userInfo).encodeToAny(value) as? [String: Any] else {
             throw Error.unsupported
         }
 
@@ -67,10 +71,11 @@ private extension DictionaryEncoder {
 
     final class Encoder: Swift.Encoder, EncoderContainer {
         let codingPath: [CodingKey]
-        let userInfo: [CodingUserInfoKey: Any] = [:]
+        let userInfo: [CodingUserInfoKey: Any]
 
-        init(codingPath: [CodingKey] = []) {
+        init(codingPath: [CodingKey] = [], userInfo: [CodingUserInfoKey: Any]) {
             self.codingPath = codingPath
+            self.userInfo = userInfo
         }
 
         private(set) var container: EncoderContainer? {
@@ -88,19 +93,19 @@ private extension DictionaryEncoder {
         }
 
         func container<Key>(keyedBy type: Key.Type) -> KeyedEncodingContainer<Key> where Key: CodingKey {
-            let keyed = KeyedContainer<Key>(codingPath: codingPath)
+            let keyed = KeyedContainer<Key>(codingPath: codingPath, userInfo: userInfo)
             container = keyed
             return KeyedEncodingContainer(keyed)
         }
 
         func unkeyedContainer() -> UnkeyedEncodingContainer {
-            let unkeyed = UnkeyedContainer(codingPath: codingPath)
+            let unkeyed = UnkeyedContainer(codingPath: codingPath, userInfo: userInfo)
             container = unkeyed
             return unkeyed
         }
 
         func singleValueContainer() -> SingleValueEncodingContainer {
-            let single = SingleContainer(codingPath: codingPath)
+            let single = SingleContainer(codingPath: codingPath, userInfo: userInfo)
             container = single
             return single
         }
@@ -129,11 +134,13 @@ extension DictionaryEncoder {
     final class KeyedContainer<K: CodingKey>: KeyedEncodingContainerProtocol, EncoderContainer {
         typealias Key = K
 
-        public let codingPath: [CodingKey]
+        let codingPath: [CodingKey]
+        private let userInfo: [CodingUserInfoKey: Any]
 
-        init(codingPath: [CodingKey]) {
+        init(codingPath: [CodingKey], userInfo: [CodingUserInfoKey: Any]) {
             self.codingPath = codingPath
             self.storage = [:]
+            self.userInfo = userInfo
         }
 
         private var storage: [String: Storage]
@@ -209,20 +216,20 @@ extension DictionaryEncoder {
             }
 
             let path = codingPath.appending(key: key)
-            let result = try Encoder(codingPath: path).encodeToAny(value)
+            let result = try Encoder(codingPath: path, userInfo: userInfo).encodeToAny(value)
             storage[key.stringValue] = .value(result)
         }
 
         func nestedContainer<NestedKey>(keyedBy keyType: NestedKey.Type, forKey key: Key) -> KeyedEncodingContainer<NestedKey> {
             let path = codingPath.appending(key: key)
-            let keyed = KeyedContainer<NestedKey>(codingPath: path)
+            let keyed = KeyedContainer<NestedKey>(codingPath: path, userInfo: userInfo)
             storage[key.stringValue] = .container(keyed)
             return KeyedEncodingContainer(keyed)
         }
 
         func nestedUnkeyedContainer(forKey key: K) -> UnkeyedEncodingContainer {
             let path = codingPath.appending(key: key)
-            let unkeyed = UnkeyedContainer(codingPath: path)
+            let unkeyed = UnkeyedContainer(codingPath: path, userInfo: userInfo)
             storage[key.stringValue] = .container(unkeyed)
             return unkeyed
         }
@@ -233,7 +240,7 @@ extension DictionaryEncoder {
 
         func superEncoder(forKey key: Key) -> Swift.Encoder {
             let path = codingPath.appending(key: key)
-            let encoder = Encoder(codingPath: path)
+            let encoder = Encoder(codingPath: path, userInfo: userInfo)
             storage[key.stringValue] = .container(encoder)
             return encoder
         }
@@ -241,10 +248,12 @@ extension DictionaryEncoder {
 
     final class UnkeyedContainer: Swift.UnkeyedEncodingContainer, EncoderContainer {
 
-        public let codingPath: [CodingKey]
+        let codingPath: [CodingKey]
+        private let userInfo: [CodingUserInfoKey: Any]
 
-        init(codingPath: [CodingKey]) {
+        init(codingPath: [CodingKey], userInfo: [CodingUserInfoKey: Any]) {
             self.codingPath = codingPath
+            self.userInfo = userInfo
         }
 
         private var storage: [Storage] = []
@@ -324,27 +333,27 @@ extension DictionaryEncoder {
             }
 
             let path = codingPath.appending(index: count)
-            let result = try Encoder(codingPath: path).encodeToAny(value)
+            let result = try Encoder(codingPath: path, userInfo: userInfo).encodeToAny(value)
             storage.append(.value(result))
         }
 
         func nestedContainer<NestedKey>(keyedBy keyType: NestedKey.Type) -> KeyedEncodingContainer<NestedKey> {
             let path = codingPath.appending(index: count)
-            let keyed = KeyedContainer<NestedKey>(codingPath: path)
+            let keyed = KeyedContainer<NestedKey>(codingPath: path, userInfo: userInfo)
             storage.append(.container(keyed))
             return KeyedEncodingContainer(keyed)
         }
 
         func nestedUnkeyedContainer() -> UnkeyedEncodingContainer {
             let path = codingPath.appending(index: count)
-            let unkeyed = UnkeyedContainer(codingPath: path)
+            let unkeyed = UnkeyedContainer(codingPath: path, userInfo: userInfo)
             storage.append(.container(unkeyed))
             return unkeyed
         }
 
         func superEncoder() -> Swift.Encoder {
             let path = codingPath.appending(index: count)
-            let encoder = Encoder(codingPath: path)
+            let encoder = Encoder(codingPath: path, userInfo: userInfo)
             storage.append(.container(encoder))
             return encoder
         }
@@ -352,10 +361,12 @@ extension DictionaryEncoder {
 
     final class SingleContainer: SingleValueEncodingContainer, EncoderContainer {
 
-        public let codingPath: [CodingKey]
+        let codingPath: [CodingKey]
+        private let userInfo: [CodingUserInfoKey: Any]
 
-        init(codingPath: [CodingKey]) {
+        init(codingPath: [CodingKey], userInfo: [CodingUserInfoKey: Any]) {
             self.codingPath = codingPath
+            self.userInfo = userInfo
         }
 
         var storage: Any?
@@ -433,7 +444,7 @@ extension DictionaryEncoder {
                 return
             }
 
-            let encoder = Encoder(codingPath: codingPath)
+            let encoder = Encoder(codingPath: codingPath, userInfo: userInfo)
             storage = try encoder.encodeToAny(value)
         }
     }
