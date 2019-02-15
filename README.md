@@ -16,11 +16,11 @@ struct Person: Codable {
 
 // Decode from [String: Any]
 let person = try DictionaryDecoder()
-		.decode(Person.self,
-				from: [
-					"name": "Herbert",
-   	 				"age": 99
-				])
+	.decode(Person.self,
+		from: [
+			"name": "Herbert",
+   	 		"age": 99
+		])
 
 // Encode to [String: Any]
 let dict = try DictionaryEncoder().encode(person)
