@@ -41,7 +41,7 @@ let owner = try UserDefaults.standard.decode(Person.self, forKey: "owner")
 Types are persisted with friendly `[String: Any]` representations;
 
 ```swift
-let defaults = UserDefaults.standard.dictionaryRepresentation
+let defaults = UserDefaults.standard.dictionaryRepresentationn()
 let owner = defaults["owner"]
 // owner == ["name": "Herbert", "age": 99]
 ```
