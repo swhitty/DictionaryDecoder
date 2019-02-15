@@ -19,7 +19,7 @@ let person = try DictionaryDecoder()
 		.decode(Person.self,
 						from: [
 							"name": "Herbert",
-   	 					"age": 99
+   	 						"age": 99
 						])
 
 // Encode to [String: Any]
@@ -41,10 +41,7 @@ let owner = try UserDefaults.standard.decode(Person.self, forKey: "owner")
 Types are persisted within friendly `[String: Any]` representations;
 
 ```swift
-
 let defaults = UserDefaults.standard.dictionaryRepresentation
-
 let owner = defaults["owner"]
-// owner == ["name": "Herber", "age": 99]
-
+// owner == ["name": "Herbert", "age": 99]
 ```
