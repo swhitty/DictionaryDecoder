@@ -598,6 +598,13 @@ final class DictionaryEncoderTests: XCTestCase {
         XCTAssertEqual(try container.toAny() as? [Int], [10, 20, 30])
     }
 
+    func testSingleContainerEncodesDictionary() throws {
+        let container = DictionaryEncoder.makeSingleContainer()
+
+        try container.encode(["Herbert": 99])
+        XCTAssertEqual(try container.toAny() as? [String: Int], ["Herbert": 99])
+    }
+
     func testSingleContainerEncodesType() throws {
         let container = DictionaryEncoder.makeSingleContainer()
 

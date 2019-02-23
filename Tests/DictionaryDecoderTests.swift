@@ -309,7 +309,7 @@ final class DictionaryDecoderTests: XCTestCase {
         let decoder = try container.superDecoder()
         XCTAssertNoThrow(try decoder.container(keyedBy: AnyCodingKey.self))
         XCTAssertThrowsError(try decoder.unkeyedContainer())
-        XCTAssertThrowsError(try decoder.singleValueContainer())
+        XCTAssertNoThrow(try decoder.singleValueContainer())
 
         let another = try container.superDecoder(forKey: "list")
         XCTAssertThrowsError(try another.container(keyedBy: AnyCodingKey.self))
@@ -686,6 +686,14 @@ final class DictionaryDecoderTests: XCTestCase {
 
         let another = DictionaryDecoder.makeSingleContainer("other")
         XCTAssertThrowsError(try another.decode([Int].self))
+    }
+
+    func testSingleContainerDecodesDictionary() throws {
+        let container = DictionaryDecoder.makeSingleContainer(["Herbert": 99])
+        XCTAssertEqual(try container.decode([String: Int].self), ["Herbert": 99])
+
+        let another = DictionaryDecoder.makeSingleContainer("other")
+        XCTAssertThrowsError(try another.decode([String: Int].self))
     }
 
     func testSingleContainerDecodesDecodable() throws {

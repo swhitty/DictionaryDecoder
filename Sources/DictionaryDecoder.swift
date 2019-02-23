@@ -66,12 +66,12 @@ private extension DictionaryDecoder {
         }
 
         func container<Key>(keyedBy type: Key.Type) throws -> KeyedDecodingContainer<Key> where Key: CodingKey {
-            guard case .keyed(let storage) = storage  else {
+            guard let keyedStorage = storage.keyedStorage()  else {
                 throw Error.unexpectedValue(at: codingPath)
             }
 
             let keyed = KeyedContainer<Key>(codingPath: codingPath,
-                                            storage: storage,
+                                            storage: keyedStorage,
                                             userInfo: userInfo)
             return KeyedDecodingContainer<Key>(keyed)
         }
@@ -87,11 +87,7 @@ private extension DictionaryDecoder {
         }
 
         func singleValueContainer() throws -> SingleValueDecodingContainer {
-            guard case .single(let value) = storage  else {
-                throw Error.unexpectedValue(at: codingPath)
-            }
-
-            return SingleContainer(value: value,
+            return SingleContainer(value: storage.singleStorage(),
                                    codingPath: [],
                                    userInfo: userInfo)
         }
@@ -101,6 +97,17 @@ private extension DictionaryDecoder {
             case unkeyed([Any])
             case single(Any)
 
+            func singleStorage() -> Any {
+                switch self {
+                case .keyed(let keyed):
+                    return keyed
+                case .unkeyed(let unkeyed):
+                    return unkeyed
+                case .single(let single):
+                    return single
+                }
+            }
+
             func unkeyedStorage() -> [Any]? {
                 switch self {
                 case .keyed:
@@ -109,6 +116,17 @@ private extension DictionaryDecoder {
                     return unkeyed
                 case .single(let single):
                     return single as? [Any]
+                }
+            }
+
+            func keyedStorage() -> [String: Any]? {
+                switch self {
+                case .keyed(let keyed):
+                    return keyed
+                case .unkeyed:
+                    return nil
+                case .single(let single):
+                    return single as? [String: Any]
                 }
             }
         }
@@ -271,8 +289,9 @@ extension DictionaryDecoder {
                 return try getValue(for: key)
             }
 
+            let path = codingPath.appending(key: key)
             let storage = try getStorage(for: key)
-            let decoder = DictionaryDecoder.Decoder(codingPath: [], storage: storage, userInfo: userInfo)
+            let decoder = DictionaryDecoder.Decoder(codingPath: path, storage: storage, userInfo: userInfo)
             return try T.init(from: decoder)
         }
 
