@@ -88,7 +88,7 @@ private extension DictionaryDecoder {
 
         func singleValueContainer() throws -> SingleValueDecodingContainer {
             return SingleContainer(value: storage.singleStorage(),
-                                   codingPath: [],
+                                   codingPath: codingPath,
                                    userInfo: userInfo)
         }
 
