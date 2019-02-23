@@ -680,6 +680,14 @@ final class DictionaryDecoderTests: XCTestCase {
         XCTAssertThrowsError(try another.decode(URL.self))
     }
 
+    func testSingleContainerDecodesArray() throws {
+        let container = DictionaryDecoder.makeSingleContainer([10, 20, 30])
+        XCTAssertEqual(try container.decode([Int].self), [10, 20, 30])
+
+        let another = DictionaryDecoder.makeSingleContainer("other")
+        XCTAssertThrowsError(try another.decode([Int].self))
+    }
+
     func testSingleContainerDecodesDecodable() throws {
         let container = DictionaryDecoder.makeSingleContainer("invalid")
         XCTAssertEqual(try container.decode(ErrorCode.self), .invalid)

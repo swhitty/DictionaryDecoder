@@ -591,6 +591,13 @@ final class DictionaryEncoderTests: XCTestCase {
         XCTAssertEqual(try container.toAny() as? URL, URL.mock)
     }
 
+    func testSingleContainerEncodesArray() throws {
+        let container = DictionaryEncoder.makeSingleContainer()
+
+        try container.encode([10, 20, 30])
+        XCTAssertEqual(try container.toAny() as? [Int], [10, 20, 30])
+    }
+
     func testSingleContainerEncodesType() throws {
         let container = DictionaryEncoder.makeSingleContainer()
 

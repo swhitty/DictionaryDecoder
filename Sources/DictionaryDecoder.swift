@@ -77,12 +77,12 @@ private extension DictionaryDecoder {
         }
 
         func unkeyedContainer() throws -> UnkeyedDecodingContainer {
-            guard case .unkeyed(let storage) = storage  else {
+            guard let unkeyedStorage = storage.unkeyedStorage()  else {
                 throw Error.unexpectedValue(at: codingPath)
             }
 
             return UnkeyedContainer(codingPath: codingPath,
-                                    storage: storage,
+                                    storage: unkeyedStorage,
                                     userInfo: userInfo)
         }
 
@@ -100,6 +100,17 @@ private extension DictionaryDecoder {
             case keyed([String: Any])
             case unkeyed([Any])
             case single(Any)
+
+            func unkeyedStorage() -> [Any]? {
+                switch self {
+                case .keyed:
+                    return nil
+                case .unkeyed(let unkeyed):
+                    return unkeyed
+                case .single(let single):
+                    return single as? [Any]
+                }
+            }
         }
     }
 
