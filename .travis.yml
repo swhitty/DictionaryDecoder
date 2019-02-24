@@ -14,6 +14,12 @@ jobs:
       script: xcodebuild clean test -project DictionaryDecoder.xcodeproj -scheme DictionaryDecoder-macOS -sdk macosx
       after_success: bash <(curl -s https://codecov.io/bash) -J 'DictionaryDecoder'
     - stage: test
+      name: Swift 5
+      os: osx
+      language: objective-c
+      osx_image: xcode10.2
+      script: swift package clean; swift test
+    - stage: test
       name: Swift PM
       os: osx
       language: objective-c
