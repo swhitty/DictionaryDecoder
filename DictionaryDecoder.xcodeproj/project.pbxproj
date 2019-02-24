@@ -15,6 +15,10 @@
 		D9228B1F21F527980063E8E3 /* NSUbiquitousKeyValueStore+Codable.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9228B1D21F527980063E8E3 /* NSUbiquitousKeyValueStore+Codable.swift */; };
 		D9228B2321F527F40063E8E3 /* NSUbiquitousKeyValueStore+CodableTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9228B2021F527A60063E8E3 /* NSUbiquitousKeyValueStore+CodableTests.swift */; };
 		D9228B2421F527F50063E8E3 /* NSUbiquitousKeyValueStore+CodableTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9228B2021F527A60063E8E3 /* NSUbiquitousKeyValueStore+CodableTests.swift */; };
+		D9746B452222B012008F1FC6 /* Dictionary+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9746B442222B012008F1FC6 /* Dictionary+Extension.swift */; };
+		D9746B462222B012008F1FC6 /* Dictionary+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9746B442222B012008F1FC6 /* Dictionary+Extension.swift */; };
+		D9746B4A2222B2E3008F1FC6 /* Dictionary+ExtensionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9746B472222B28F008F1FC6 /* Dictionary+ExtensionTests.swift */; };
+		D9746B4B2222B2E3008F1FC6 /* Dictionary+ExtensionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9746B472222B28F008F1FC6 /* Dictionary+ExtensionTests.swift */; };
 		D98C49A5218A497D0035E516 /* DictionaryDecoder.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D98C499B218A497D0035E516 /* DictionaryDecoder.framework */; };
 		D98C49AC218A497D0035E516 /* DictionaryDecoder.h in Headers */ = {isa = PBXBuildFile; fileRef = D98C499E218A497D0035E516 /* DictionaryDecoder.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		D98C49B7218A49C50035E516 /* DictionaryDecoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = D98C49B5218A49C50035E516 /* DictionaryDecoder.swift */; };
@@ -54,6 +58,8 @@
 		D913F18821ABD6AD00B76B06 /* UserDefaults+CodableTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UserDefaults+CodableTests.swift"; sourceTree = "<group>"; };
 		D9228B1D21F527980063E8E3 /* NSUbiquitousKeyValueStore+Codable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSUbiquitousKeyValueStore+Codable.swift"; sourceTree = "<group>"; };
 		D9228B2021F527A60063E8E3 /* NSUbiquitousKeyValueStore+CodableTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSUbiquitousKeyValueStore+CodableTests.swift"; sourceTree = "<group>"; };
+		D9746B442222B012008F1FC6 /* Dictionary+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Dictionary+Extension.swift"; sourceTree = "<group>"; };
+		D9746B472222B28F008F1FC6 /* Dictionary+ExtensionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Dictionary+ExtensionTests.swift"; sourceTree = "<group>"; };
 		D98C499B218A497D0035E516 /* DictionaryDecoder.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = DictionaryDecoder.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D98C499E218A497D0035E516 /* DictionaryDecoder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DictionaryDecoder.h; sourceTree = "<group>"; };
 		D98C499F218A497D0035E516 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -129,6 +135,7 @@
 			children = (
 				D98C499E218A497D0035E516 /* DictionaryDecoder.h */,
 				D98C499F218A497D0035E516 /* Info.plist */,
+				D9746B442222B012008F1FC6 /* Dictionary+Extension.swift */,
 				D98C49B5218A49C50035E516 /* DictionaryDecoder.swift */,
 				D98C49B6218A49C50035E516 /* DictionaryEncoder.swift */,
 				D9228B1D21F527980063E8E3 /* NSUbiquitousKeyValueStore+Codable.swift */,
@@ -142,6 +149,7 @@
 			isa = PBXGroup;
 			children = (
 				D98C49AB218A497D0035E516 /* Info.plist */,
+				D9746B472222B28F008F1FC6 /* Dictionary+ExtensionTests.swift */,
 				D98C49B9218A49E20035E516 /* DictionaryDecoderTests.swift */,
 				D98C49BA218A49E20035E516 /* DictionaryEncoderTests.swift */,
 				D9228B2021F527A60063E8E3 /* NSUbiquitousKeyValueStore+CodableTests.swift */,
@@ -330,6 +338,7 @@
 			files = (
 				D98C49B8218A49C50035E516 /* DictionaryEncoder.swift in Sources */,
 				D9228B1E21F527980063E8E3 /* NSUbiquitousKeyValueStore+Codable.swift in Sources */,
+				D9746B452222B012008F1FC6 /* Dictionary+Extension.swift in Sources */,
 				D913F18621AB67E900B76B06 /* UserDefaults+Codable.swift in Sources */,
 				D98C49B7218A49C50035E516 /* DictionaryDecoder.swift in Sources */,
 			);
@@ -339,6 +348,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D9746B4A2222B2E3008F1FC6 /* Dictionary+ExtensionTests.swift in Sources */,
 				D98C49BC218A49E20035E516 /* DictionaryEncoderTests.swift in Sources */,
 				D9228B2321F527F40063E8E3 /* NSUbiquitousKeyValueStore+CodableTests.swift in Sources */,
 				D913F18921ABD6AD00B76B06 /* UserDefaults+CodableTests.swift in Sources */,
@@ -352,6 +362,7 @@
 			files = (
 				D9B19690219ACB5C00B13AC3 /* DictionaryEncoder.swift in Sources */,
 				D9228B1F21F527980063E8E3 /* NSUbiquitousKeyValueStore+Codable.swift in Sources */,
+				D9746B462222B012008F1FC6 /* Dictionary+Extension.swift in Sources */,
 				D913F18721AB67E900B76B06 /* UserDefaults+Codable.swift in Sources */,
 				D9B1968F219ACB5C00B13AC3 /* DictionaryDecoder.swift in Sources */,
 			);
@@ -361,6 +372,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D9746B4B2222B2E3008F1FC6 /* Dictionary+ExtensionTests.swift in Sources */,
 				D9B19692219ACD1E00B13AC3 /* DictionaryEncoderTests.swift in Sources */,
 				D9228B2421F527F50063E8E3 /* NSUbiquitousKeyValueStore+CodableTests.swift in Sources */,
 				D913F18A21ABD6AD00B76B06 /* UserDefaults+CodableTests.swift in Sources */,
