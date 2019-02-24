@@ -204,16 +204,18 @@ final class DictionaryDecoderTests: XCTestCase {
         let container = DictionaryDecoder.makeKeyedContainer(storage: ["key": Date.distantPast])
         XCTAssertEqual(try container.decode(Date.self, forKey: "key"), Date.distantPast)
 
-        let another = DictionaryDecoder.makeKeyedContainer(storage: ["key": 100.0])
+        let another = DictionaryDecoder.makeKeyedContainer(storage: ["key": "abc"])
         XCTAssertThrowsError(try another.decode(Date.self, forKey: "key"))
         XCTAssertThrowsError(try another.decode(Date.self, forKey: "missing"))
     }
 
     func testKeyedContainerDecodesURL() throws {
-        let container = DictionaryDecoder.makeKeyedContainer(storage: ["key": URL.mock])
+        let container = DictionaryDecoder.makeKeyedContainer(storage: ["key": URL.mock,
+                                                                       "string": URL.mock.absoluteString])
         XCTAssertEqual(try container.decode(URL.self, forKey: "key"), URL.mock)
+        XCTAssertEqual(try container.decode(URL.self, forKey: "string"), URL.mock)
 
-        let another = DictionaryDecoder.makeKeyedContainer(storage: ["key": 100.0])
+        let another = DictionaryDecoder.makeKeyedContainer(storage: ["key": "some text"])
         XCTAssertThrowsError(try another.decode(URL.self, forKey: "key"))
         XCTAssertThrowsError(try another.decode(URL.self, forKey: "missing"))
     }
@@ -454,16 +456,15 @@ final class DictionaryDecoderTests: XCTestCase {
         var container = DictionaryDecoder.makeUnkeyedContainer([Date.distantPast])
         XCTAssertEqual(try container.decode(Date.self), Date.distantPast)
 
-        var another = DictionaryDecoder.makeUnkeyedContainer([100.0])
+        var another = DictionaryDecoder.makeUnkeyedContainer(["abc"])
         XCTAssertThrowsError(try another.decode(Date.self))
     }
 
     func testUnkeyedContainerDecodesURL() throws {
-        var container = DictionaryDecoder.makeUnkeyedContainer([URL.mock])
+        var container = DictionaryDecoder.makeUnkeyedContainer([URL.mock, URL.mock.absoluteString, "some text"])
         XCTAssertEqual(try container.decode(URL.self), URL.mock)
-
-        var another = DictionaryDecoder.makeUnkeyedContainer([100.0])
-        XCTAssertThrowsError(try another.decode(URL.self))
+        XCTAssertEqual(try container.decode(URL.self), URL.mock)
+        XCTAssertThrowsError(try container.decode(URL.self))
     }
 
     func testUnkeyedContainerDecodesNestedKeyed() throws {
@@ -511,16 +512,21 @@ final class DictionaryDecoderTests: XCTestCase {
     }
 
     func testUnkeyedGetStorageIncrementsIndex() throws {
-        var container = DictionaryDecoder.makeUnkeyedContainer([10, 20, 30])
+        var container = DictionaryDecoder.makeUnkeyedContainer([10, URL.mock, 30])
 
         XCTAssertEqual(container.count, 3)
         XCTAssertEqual(container.currentIndex, 0)
 
-        XCTAssertNoThrow(try container.decode(Int.self))
+        XCTAssertEqual(try container.decode(Int.self), 10)
         XCTAssertEqual(container.currentIndex, 1)
 
-        XCTAssertNoThrow(try container.decode(Int.self))
+        XCTAssertEqual(try container.decode(URL.self), URL.mock)
         XCTAssertEqual(container.currentIndex, 2)
+
+        XCTAssertEqual(try container.decode(Int.self), 30)
+        XCTAssertEqual(container.currentIndex, 3)
+        XCTAssertTrue(container.isAtEnd)
+        XCTAssertThrowsError(try container.decode(Int.self))
     }
 
     func testSuperEncoder() throws {
@@ -675,9 +681,14 @@ final class DictionaryDecoderTests: XCTestCase {
     func testSingleContainerDecodesURL() throws {
         let container = DictionaryDecoder.makeSingleContainer(URL.mock)
         XCTAssertEqual(try container.decode(URL.self), URL.mock)
+        let string = DictionaryDecoder.makeSingleContainer(URL.mock.absoluteString)
+        XCTAssertEqual(try string.decode(URL.self), URL.mock)
 
-        let another = DictionaryDecoder.makeSingleContainer("100")
+        let another = DictionaryDecoder.makeSingleContainer("some text")
         XCTAssertThrowsError(try another.decode(URL.self))
+
+        let onemore = DictionaryDecoder.makeSingleContainer(10)
+        XCTAssertThrowsError(try onemore.decode(URL.self))
     }
 
     func testSingleContainerDecodesArray() throws {

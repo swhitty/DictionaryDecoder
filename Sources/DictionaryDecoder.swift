@@ -159,12 +159,29 @@ private extension DictionaryDecoder {
         }
     }
 
-    static func isSupportedType<T>(_ type: T.Type) -> Bool where T: Decodable {
-        return
-            T.self == Data.self || T.self == NSData.self ||
-            T.self == Date.self || T.self == NSDate.self ||
-            T.self == Decimal.self || T.self == NSDecimalNumber.self ||
-            T.self == URL.self || T.self == NSURL.self
+    static func decode(_ type: URL.Type, from value: Any) -> URL? {
+        if let url = value as? URL {
+            return url
+        } else if let string = value as? String {
+            return URL(string: string)
+        }
+        return nil
+    }
+
+    static func decode<T>(_ type: T.Type, from value: Any?) -> T? where T: Decodable {
+        guard let value = value else { return nil }
+
+        if type == URL.self || type == NSURL.self {
+            return decode(URL.self, from: value) as? T
+        }
+
+        if type == Data.self || type == NSData.self ||
+           type == Date.self || type == NSDate.self ||
+           type == Decimal.self || type == NSDecimalNumber.self {
+            return value as? T
+        }
+
+        return nil
     }
 }
 
@@ -285,8 +302,8 @@ extension DictionaryDecoder {
         }
 
         func decode<T>(_ type: T.Type, forKey key: Key) throws -> T where T: Decodable {
-            guard DictionaryDecoder.isSupportedType(T.self) == false else {
-                return try getValue(for: key)
+            if let value = DictionaryDecoder.decode(T.self, from: self.storage[key.stringValue]) {
+                return value
             }
 
             let path = codingPath.appending(key: key)
@@ -440,8 +457,9 @@ extension DictionaryDecoder {
         }
 
         mutating func decode<T>(_ type: T.Type) throws -> T where T: Decodable {
-            guard DictionaryDecoder.isSupportedType(T.self) == false else {
-                return try getValue()
+            if let value = DictionaryDecoder.decode(T.self, from: self.storage[currentIndex]) {
+                currentIndex += 1
+                return value
             }
 
             let path = codingPath.appending(index: currentIndex)
@@ -562,8 +580,8 @@ extension DictionaryDecoder {
         }
 
         func decode<T>(_ type: T.Type) throws -> T where T: Decodable {
-            guard DictionaryDecoder.isSupportedType(T.self) == false else {
-                return try getValue()
+            if let value = DictionaryDecoder.decode(T.self, from: self.value) {
+                return value
             }
 
             let decoder = DictionaryDecoder.Decoder(codingPath: codingPath,
