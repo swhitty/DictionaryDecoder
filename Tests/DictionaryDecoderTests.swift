@@ -45,8 +45,17 @@ final class DictionaryDecoderTests: XCTestCase {
         XCTAssertEqual(simple.isValid, true)
     }
 
-    func testSimpleDecodeFromDictionaryFails() throws {
+    func testSimpleDecodeFromDictionaryFails() {
         XCTAssertThrowsError(try DictionaryDecoder().decode(Simple.self, from: ["title": "Lowlands"]))
+    }
+
+    func testSimpleDecodeFromArraySucceeds() throws {
+        let simple = try DictionaryDecoder().decode([Int].self, from: [10, 20, 30])
+        XCTAssertEqual(simple, [10, 20, 30])
+    }
+
+    func testSimpleDecodeFromArrayFails() {
+        XCTAssertThrowsError(try DictionaryDecoder().decode([String].self, from: [10, 20, 30]))
     }
 
     // MARK: - KeyedContainer

@@ -46,6 +46,14 @@ public final class DictionaryEncoder {
 
         return dictionary
     }
+
+    public func encodeToArray<T>(_ value: T) throws -> [Any] where T: Encodable {
+        guard let array = try Encoder(userInfo: userInfo).encodeToAny(value) as? [Any] else {
+            throw Error.unsupported
+        }
+
+        return array
+    }
 }
 
 private extension DictionaryEncoder {

@@ -35,7 +35,6 @@ import XCTest
 final class DictionaryEncoderTests: XCTestCase {
 
     func testEncode() throws {
-
         let result = try DictionaryEncoder().encode(RequestParameters.mock)
 
         XCTAssertEqual(result["name"] as? String, "Peter Jones")
@@ -45,6 +44,15 @@ final class DictionaryEncoderTests: XCTestCase {
 
     func testEncodeSingleValueThrows() {
         XCTAssertThrowsError(try DictionaryEncoder().encode(ErrorCode.invalid))
+    }
+
+    func testEncodeToArray() throws {
+        let result = try DictionaryEncoder().encodeToArray([10, 20, 30])
+        XCTAssertEqual(result as? [Int], [10, 20, 30])
+    }
+
+    func testEncodeToArrayFails() throws {
+        XCTAssertThrowsError(try DictionaryEncoder().encodeToArray(["test": 1]))
     }
 
     func testSimple() throws {

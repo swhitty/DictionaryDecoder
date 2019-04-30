@@ -43,8 +43,12 @@ public final class DictionaryDecoder {
         let decoder = Decoder(codingPath: [], storage: .keyed(dictionary), userInfo: userInfo)
         return try T.init(from: decoder)
     }
-}
 
+    public func decode<T: Decodable>(_ type: T.Type, from array: [Any]) throws -> T {
+        let decoder = Decoder(codingPath: [], storage: .unkeyed(array), userInfo: userInfo)
+        return try T.init(from: decoder)
+    }
+}
 
 private extension DictionaryDecoder {
 
