@@ -5,7 +5,7 @@ jobs:
       os: osx
       language: objective-c
       osx_image: xcode11.3
-      script: xcodebuild clean test -project DictionaryDecoder.xcodeproj -scheme DictionaryDecoder -sdk iphonesimulator13.3
+      script: xcodebuild clean test -project DictionaryDecoder.xcodeproj -scheme DictionaryDecoder -sdk iphonesimulator13.2
     - stage: test
       name: macOS
       os: osx
