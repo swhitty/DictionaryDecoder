@@ -34,7 +34,7 @@ try UserDefaults.standard.encode(person, forKey: "owner")
 let owner = try UserDefaults.standard.decode(Person.self, forKey: "owner")
 ```
 
-Types are persisted with friendly `[String: Any]` representations;
+Types are persisted in a friendly `[String: Any]` representation;
 
 ```swift
 let defaults = UserDefaults.standard.dictionaryRepresentation()
