@@ -4,20 +4,18 @@ jobs:
       name: iOS
       os: osx
       language: objective-c
-      osx_image: xcode11.3
-      script: xcodebuild clean test -project DictionaryDecoder.xcodeproj -scheme DictionaryDecoder -sdk iphonesimulator13.2 -destination "name=iPhone 11"
+      osx_image: xcode11.4
+      script: xcodebuild clean test -project DictionaryDecoder.xcodeproj -scheme DictionaryDecoder -sdk iphonesimulator13.4 -destination "name=iPhone 11"
     - stage: test
       name: macOS
       os: osx
       language: objective-c
-      osx_image: xcode11.3
+      osx_image: xcode11.4
       script: xcodebuild clean test -project DictionaryDecoder.xcodeproj -scheme DictionaryDecoder-macOS -sdk macosx
       after_success: bash <(curl -s https://codecov.io/bash) -J 'DictionaryDecoder'
     - stage: test
       name: Swift PM
-      os: osx
-      language: objective-c
-      osx_image: xcode11.3
+      osx_image: xcode11.4
       script: swift package clean; swift test
     - stage: test
       name: Swift Linux
