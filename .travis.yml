@@ -1,15 +1,14 @@
+language: swift
 jobs:  
   include:
     - stage: test
       name: iOS
       os: osx
-      language: objective-c
       osx_image: xcode11.4
       script: xcodebuild clean test -project DictionaryDecoder.xcodeproj -scheme DictionaryDecoder -sdk iphonesimulator13.4 -destination "name=iPhone 11"
     - stage: test
       name: macOS
       os: osx
-      language: objective-c
       osx_image: xcode11.4
       script: xcodebuild clean test -project DictionaryDecoder.xcodeproj -scheme DictionaryDecoder-macOS -sdk macosx
       after_success: bash <(curl -s https://codecov.io/bash) -J 'DictionaryDecoder'
