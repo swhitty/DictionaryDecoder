@@ -1,6 +1,5 @@
-// swift-tools-version:5.0
+// swift-tools-version:5.4
 import PackageDescription
-
 
 let exclude: [String]
 #if os(Linux)
@@ -30,4 +29,3 @@ let package = Package(
 					exclude: exclude),
     ]
 )
-
