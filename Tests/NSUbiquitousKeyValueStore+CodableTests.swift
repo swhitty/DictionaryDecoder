@@ -37,18 +37,21 @@ import XCTest
 final class NSUbiquitousKeyValueStoreCodableTests: XCTestCase {
 
     func testThrowsWhenKeyMissing() throws {
+        guard #available(watchOS 9.0, *) else { return }
         let defaults = NSUbiquitousKeyValueStore.makeMock()
         defaults.removeObject(forKey: "person")
         XCTAssertThrowsError(try defaults.decode(Person.self, forKey: "person"))
     }
 
     func testThrowsWhenInvalidDictionary() throws {
+        guard #available(watchOS 9.0, *) else { return }
         let defaults = NSUbiquitousKeyValueStore.makeMock()
         defaults.set(["name": 99, "age": "Herbert"], forKey: "person")
         XCTAssertThrowsError(try defaults.decode(Person.self, forKey: "person"))
     }
 
     func testCanDecode() throws {
+        guard #available(watchOS 9.0, *) else { return }
         let defaults = NSUbiquitousKeyValueStore.makeMock()
         defaults.set(["name": "Herbert", "age": 99], forKey: "person")
 
@@ -57,6 +60,7 @@ final class NSUbiquitousKeyValueStoreCodableTests: XCTestCase {
     }
 
     func testCanEncode() throws {
+        guard #available(watchOS 9.0, *) else { return }
         let defaults = NSUbiquitousKeyValueStore.makeMock()
         defaults.removeObject(forKey: "person")
 
@@ -69,6 +73,7 @@ final class NSUbiquitousKeyValueStoreCodableTests: XCTestCase {
     }
 
     func testCanEncodeOptional() throws {
+        guard #available(watchOS 9.0, *) else { return }
         let defaults = NSUbiquitousKeyValueStore.makeMock()
 
         XCTAssertNil(defaults.object(forKey: "person"))
@@ -82,6 +87,7 @@ final class NSUbiquitousKeyValueStoreCodableTests: XCTestCase {
     }
 
     func testCanDecodeOptional() throws {
+        guard #available(watchOS 9.0, *) else { return }
         let defaults = NSUbiquitousKeyValueStore.makeMock()
 
         XCTAssertNil(defaults.object(forKey: "person"))
@@ -98,6 +104,7 @@ private struct Person: Codable, Equatable {
     var age: Int
 }
 
+@available(watchOS 9.0, *)
 private extension NSUbiquitousKeyValueStore {
     
     static func makeMock() -> NSUbiquitousKeyValueStore {
@@ -105,6 +112,7 @@ private extension NSUbiquitousKeyValueStore {
     }
 }
 
+@available(watchOS 9.0, *)
 final class MockKeyValueStore: NSUbiquitousKeyValueStore {
 
     private var storage = [String: Any]()
@@ -125,3 +133,4 @@ final class MockKeyValueStore: NSUbiquitousKeyValueStore {
         storage[aKey]
     }
 }
+

@@ -31,6 +31,7 @@
 
 import Foundation
 
+@available(watchOS 9.0, *)
 public extension NSUbiquitousKeyValueStore {
 
     func encode<T: Encodable>(_ value: T, forKey key: String) throws {
