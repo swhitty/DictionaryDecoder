@@ -14,7 +14,7 @@ let exclude: [String]
 let package = Package(
     name: "DictionaryDecoder",
     platforms: [
-        .macOS(.v10_13), .iOS(.v10), .tvOS(.v10)
+        .macOS(.v10_13), .iOS(.v10), .tvOS(.v10), .watchOS(.v4)
     ],
     products: [
         .library(
