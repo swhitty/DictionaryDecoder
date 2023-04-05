@@ -101,6 +101,27 @@ private struct Person: Codable, Equatable {
 private extension NSUbiquitousKeyValueStore {
     
     static func makeMock() -> NSUbiquitousKeyValueStore {
-        return NSUbiquitousKeyValueStore()
+        return MockKeyValueStore()
+    }
+}
+
+final class MockKeyValueStore: NSUbiquitousKeyValueStore {
+
+    private var storage = [String: Any]()
+
+    override func set(_ aDictionary: [String : Any]?, forKey aKey: String) {
+        storage[aKey] = aDictionary
+    }
+
+    override func removeObject(forKey aKey: String) {
+        storage[aKey] = nil
+    }
+
+    override func dictionary(forKey aKey: String) -> [String: Any]? {
+        storage[aKey] as? [String: Any]
+    }
+
+    override func object(forKey aKey: String) -> Any? {
+        storage[aKey]
     }
 }
