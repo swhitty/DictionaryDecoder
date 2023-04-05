@@ -1,6 +1,6 @@
-[![Travis](https://img.shields.io/travis/swhitty/DictionaryDecoder.svg)](https://travis-ci.org/swhitty/DictionaryDecoder)
+[![Build](https://github.com/swhitty/DictionaryDecoder/actions/workflows/build.yml/badge.svg)](https://github.com/swhitty/DictionaryDecoder/actions/workflows/build.yml)
 [![CodeCov](https://codecov.io/gh/swhitty/DictionaryDecoder/branch/master/graphs/badge.svg)](https://codecov.io/gh/swhitty/DictionaryDecoder/branch/master)
-[![Swift 5.0](https://img.shields.io/badge/swift-5.0-red.svg?style=flat)](https://developer.apple.com/swift)
+[![Swift 5.8](https://img.shields.io/badge/swift-5.4%20|%205.8-red.svg?style=flat)](https://developer.apple.com/swift)
 [![License](https://img.shields.io/badge/license-MIT-lightgrey.svg)](https://opensource.org/licenses/MIT)
 [![Twitter](https://img.shields.io/badge/twitter-@simonwhitty-blue.svg)](http://twitter.com/simonwhitty)
 
@@ -15,8 +15,10 @@ struct Person: Codable {
 }
 
 // Decode from [String: Any]
-let person = try DictionaryDecoder()
-                  .decode(Person.self, from: ["name": "Herbert", "age": 99])
+let person = try DictionaryDecoder().decode(
+  Person.self, 
+  from: ["name": "Herbert", "age": 99]
+)
 
 // Encode to [String: Any]
 let dict = try DictionaryEncoder().encode(person)
