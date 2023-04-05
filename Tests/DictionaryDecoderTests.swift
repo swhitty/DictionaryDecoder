@@ -280,7 +280,7 @@ final class DictionaryDecoderTests: XCTestCase {
         let keyed = DictionaryDecoder.makeKeyedContainer(storage:
             ["first": ["title": "Lowlands",
                        "size": 20,
-                       "isValid": true]
+                       "isValid": true] as [String: Any]
             ])
 
         let first = try keyed.decode(Simple.self, forKey: "first")
@@ -303,7 +303,7 @@ final class DictionaryDecoderTests: XCTestCase {
                        "isValid": true],
                       ["title": "Highlands",
                         "size": 100,
-                        "isValid": false]]
+                        "isValid": false]] as [[String: Any]]
             ])
 
         let list = try keyed.decode([Simple].self, forKey: "list")
@@ -759,6 +759,12 @@ private extension DictionaryDecoder {
     }
 
     static func makeUnkeyedContainer(_ storage: [Any]) -> UnkeyedDecodingContainer {
+        return DictionaryDecoder.UnkeyedContainer(codingPath: [],
+                                                  storage: storage,
+                                                  userInfo: [:])
+    }
+
+    static func makeUnkeyedContainer(_ storage: [[String: Any]]) -> UnkeyedDecodingContainer {
         return DictionaryDecoder.UnkeyedContainer(codingPath: [],
                                                   storage: storage,
                                                   userInfo: [:])

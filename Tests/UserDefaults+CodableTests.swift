@@ -104,4 +104,8 @@ private extension UserDefaults {
         UserDefaults().removePersistentDomain(forName: "mock")
         return UserDefaults(suiteName: "mock")!
     }
+
+    func set(_ value: [String: Any]?, forKey defaultName: String) {
+        self.set(value as Any, forKey: defaultName)
+    }
 }
