@@ -6,6 +6,26 @@ on:
   workflow_dispatch:
 
 jobs:
+  xcode_14_3:
+    runs-on: macos-13
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_14.3.app/Contents/Developer
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Version
+        run: swift --version
+      - name: Build
+        run: swift test --enable-code-coverage --filter
+      - name: Test
+        run: swift test --enable-code-coverage --skip-build
+      - name: Gather code coverage
+        run: xcrun llvm-cov export -format="lcov" .build/debug/DictionaryDecoderPackageTests.xctest/Contents/MacOS/DictionaryDecoderPackageTests -instr-profile .build/debug/codecov/default.profdata > coverage_report.lcov
+      - name: Upload Coverage
+        uses: codecov/codecov-action@v3
+        with:
+          files: ./coverage_report.lcov
+
   xcode_14_2:
     runs-on: macos-12
     env:
@@ -16,15 +36,9 @@ jobs:
       - name: Version
         run: swift --version
       - name: Build
-        run: swift build --build-tests
+        run: swift test --enable-code-coverage --filter
       - name: Test
-        run: swift test --enable-code-coverage
-      - name: Gather code coverage
-        run: xcrun llvm-cov export -format="lcov" .build/debug/DictionaryDecoderPackageTests.xctest/Contents/MacOS/DictionaryDecoderPackageTests -instr-profile .build/debug/codecov/default.profdata > coverage_report.lcov
-      - name: Upload Coverage
-        uses: codecov/codecov-action@v3
-        with:
-          files: ./coverage_report.lcov
+        run: swift test --enable-code-coverage --skip-build
 
   xcode_13_4:
     runs-on: macos-12
@@ -36,9 +50,9 @@ jobs:
       - name: Version
         run: swift --version
       - name: Build
-        run: swift build --build-tests
+        run: swift test --enable-code-coverage --filter
       - name: Test
-        run: swift test --skip-build
+        run: swift test --enable-code-coverage --skip-build
 
   linux_swift_5_8:
     runs-on: ubuntu-latest
@@ -49,9 +63,9 @@ jobs:
       - name: Version
         run: swift --version
       - name: Build
-        run: swift build --build-tests
+        run: swift test --enable-code-coverage --filter
       - name: Test
-        run: swift test --skip-build
+        run: swift test --enable-code-coverage --skip-build
 
   linux_swift_5_4:
     runs-on: ubuntu-latest
@@ -62,6 +76,6 @@ jobs:
       - name: Version
         run: swift --version
       - name: Build
-        run: swift build --build-tests
+        run: swift test --enable-code-coverage --filter
       - name: Test
-        run: swift test --skip-build
+        run: swift test --enable-code-coverage --skip-build
