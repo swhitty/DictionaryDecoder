@@ -45,6 +45,22 @@ final class DictionaryDecoderTests: XCTestCase {
         XCTAssertEqual(simple.isValid, true)
     }
 
+    func testNestedDecodeFromDictionarySucceeds() throws {
+        let nested = try DictionaryDecoder().decode(
+            Nested.self,
+            from: ["name": "Sarah",
+                   "simple": ["title": "Lowlands",
+                              "size": 16,
+                              "isValid": true] as [String: Any]]
+        )
+
+        XCTAssertEqual(nested.name, "Sarah")
+        XCTAssertEqual(nested.simple.title, "Lowlands")
+        XCTAssertEqual(nested.simple.size, 16)
+        XCTAssertEqual(nested.simple.isValid, true)
+        XCTAssertNil(nested.maybeSimple)
+    }
+
     func testSimpleDecodeFromDictionaryFails() {
         XCTAssertThrowsError(try DictionaryDecoder().decode(Simple.self, from: ["title": "Lowlands"]))
     }
@@ -253,12 +269,14 @@ final class DictionaryDecoderTests: XCTestCase {
         let keyed = DictionaryDecoder.makeKeyedContainer(storage: ["blah": 2,
                                                                    "oops": Optional<Any>.none as Any,
                                                                    "nil": Optional<String>.none as Any,
-                                                                   "another": Optional("Simon") as Any])
+                                                                   "another": Optional("Simon") as Any,
+                                                                   "nested": ["fish": 5] as Any])
 
         XCTAssertTrue(try keyed.decodeNil(forKey: "oops"))
         XCTAssertTrue(try keyed.decodeNil(forKey: "nil"))
         XCTAssertFalse(try keyed.decodeNil(forKey: "another"))
-        XCTAssertThrowsError(try keyed.decodeNil(forKey: "blah"))
+        XCTAssertFalse(try keyed.decodeNil(forKey: "nested"))
+        XCTAssertFalse(try keyed.decodeNil(forKey: "blah"))
         XCTAssertThrowsError(try keyed.decodeNil(forKey: "missing"))
     }
 
@@ -742,6 +760,12 @@ private extension DictionaryDecoderTests {
         var title: String
         var size: Int
         var isValid: Bool
+    }
+
+    struct Nested: Equatable, Decodable {
+        var name: String
+        var simple: Simple
+        var maybeSimple: Simple?
     }
 
     enum ErrorCode: String, Decodable {

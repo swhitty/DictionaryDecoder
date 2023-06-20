@@ -243,7 +243,7 @@ extension DictionaryDecoder {
             }
 
             guard let optional = AnyOptional(value) else {
-                throw Error.unexpectedValue(at: path)
+                return false
             }
 
             return optional.isNone
