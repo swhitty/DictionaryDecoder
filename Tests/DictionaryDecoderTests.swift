@@ -705,6 +705,20 @@ final class DictionaryDecoderTests: XCTestCase {
         XCTAssertThrowsError(try another.decode(Date.self))
     }
 
+    func testSingleContainerDecodesDecimal() throws {
+        let container = DictionaryDecoder.makeSingleContainer(Double(10))
+        XCTAssertEqual(try container.decode(Decimal.self), 10)
+
+        let another = DictionaryDecoder.makeSingleContainer(Decimal(20))
+        XCTAssertEqual(try another.decode(Decimal.self), 20)
+
+        let oneMore = DictionaryDecoder.makeSingleContainer(Int(30))
+        XCTAssertEqual(try oneMore.decode(Decimal.self), 30)
+
+        let finally = DictionaryDecoder.makeSingleContainer("fish")
+        XCTAssertThrowsError(try finally.decode(Decimal.self))
+    }
+
     func testSingleContainerDecodesURL() throws {
         let container = DictionaryDecoder.makeSingleContainer(URL.mock)
         XCTAssertEqual(try container.decode(URL.self), URL.mock)

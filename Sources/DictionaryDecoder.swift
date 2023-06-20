@@ -172,6 +172,18 @@ private extension DictionaryDecoder {
         return nil
     }
 
+    static func decode(_ type: Decimal.Type, from value: Any?) -> Decimal? {
+        if let decimal = value as? Decimal {
+            return decimal
+        } else if let double = value as? Double {
+            return Decimal(double)
+        } else if let int = value as? Int {
+            return Decimal(int)
+        } else {
+            return nil
+        }
+    }
+
     static func decode<T>(_ type: T.Type, from value: Any?) -> T? where T: Decodable {
         guard let value = value else { return nil }
 
@@ -179,9 +191,12 @@ private extension DictionaryDecoder {
             return decode(URL.self, from: value) as? T
         }
 
+        if type == Decimal.self || type == NSDecimalNumber.self {
+            return decode(Decimal.self, from: value) as? T
+        }
+
         if type == Data.self || type == NSData.self ||
-           type == Date.self || type == NSDate.self ||
-           type == Decimal.self || type == NSDecimalNumber.self {
+           type == Date.self || type == NSDate.self {
             return value as? T
         }
 
