@@ -38,6 +38,11 @@ public extension UserDefaults {
         set(dictionary, forKey: key)
     }
 
+    func encode<T: Encodable>(_ value: [T], forKey key: String) throws {
+        let dictionary = try DictionaryEncoder().encodeToArray(value)
+        set(dictionary, forKey: key)
+    }
+
     func encode<T: Encodable>(_ value: T?, forKey key: String) throws {
         switch value {
         case .some(let value):
@@ -52,6 +57,13 @@ public extension UserDefaults {
             throw Error.invalid
         }
         return try DictionaryDecoder().decode(type, from: dictionary)
+    }
+
+    func decode<T: Decodable>(_ type: [T].Type, forKey key: String) throws -> [T] {
+        guard let array = array(forKey: key) else {
+            throw Error.invalid
+        }
+        return try DictionaryDecoder().decode(type, from: array)
     }
 
     func decode<T: Decodable>(_ type: Optional<T>.Type, forKey key: String) throws -> T? {
