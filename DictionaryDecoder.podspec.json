@@ -1,6 +1,6 @@
 {
   "name": "DictionaryDecoder",
-  "version": "0.19.0",
+  "version": "0.23.0",
   "summary": "A Swift library for encoding and decoding Codable types to [String: Any].",
   "homepage": "https://github.com/swhitty/DictionaryDecoder",
   "authors": "Simon Whitty",
@@ -10,17 +10,17 @@
   },
   "source": {
     "git": "https://github.com/swhitty/DictionaryDecoder.git",
-    "tag": "0.19.0"
+    "tag": "0.23.0"
   },
   "platforms": {
-    "ios": "10.0",
+    "ios": "11.0",
     "watchos": "4.0",
-    "tvos": "10.0",
+    "tvos": "11.0",
     "osx": "10.13"
   },
   "source_files": "Sources/*.swift",
   "watchos": {
       "exclude_files": "Sources/NSUbiquitousKeyValueStore+Codable.swift"
   },
-  "swift_version": "5.0"
+  "swift_version": "5.7"
 }
