@@ -30,6 +30,7 @@
 //
 
 import Foundation
+import CoreFoundation
 
 public final class KeyValueDecoder {
 
@@ -539,8 +540,8 @@ private extension KeyValueDecoder {
 
 extension NSNumber {
     func getInt64Value() -> Int64? {
-        guard getTypeID() == CFNumberGetTypeID() else { return nil }
-        switch CFNumberGetType(self as CFNumber) {
+        guard let numberID = getNumberTypeID() else { return nil }
+        switch numberID {
         case .intType, .sInt8Type, .sInt16Type, .sInt32Type, .sInt64Type, .nsIntegerType, .charType, .shortType, .longType, .longLongType:
             return int64Value
         default:
@@ -549,8 +550,8 @@ extension NSNumber {
     }
 
     func getDoubleValue() -> Double? {
-        guard getTypeID() == CFNumberGetTypeID() else { return nil }
-        switch CFNumberGetType(self as CFNumber) {
+        guard let numberID = getNumberTypeID() else { return nil }
+        switch numberID {
         case .doubleType, .floatType, .float32Type, .float64Type, .cgFloatType:
             return doubleValue
         default:
@@ -558,7 +559,12 @@ extension NSNumber {
         }
     }
 
-    func getTypeID() -> CFTypeID {
-        CFGetTypeID(self as CFTypeRef)
+    func getNumberTypeID() -> CFNumberType? {
+        guard CFGetTypeID(self as CFTypeRef) == CFNumberGetTypeID() else { return nil }
+#if canImport(Darwin)
+        return CFNumberGetType(self as CFNumber)
+#else
+        return nil
+#endif
     }
 }

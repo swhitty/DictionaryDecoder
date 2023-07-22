@@ -43,11 +43,11 @@ public extension UserDefaults {
     }
 
     func decode<T: Decodable>(_ type: T?.Type, forKey key: String) throws -> T? {
-        guard let storage = value(forKey: key) else { return  nil }
+        guard let storage = object(forKey: key) else { return nil }
         return try KeyValueDecoder().decode(type, from: storage)
     }
 
     func decode<T: Decodable>(_ type: T.Type, forKey key: String) throws -> T {
-        try KeyValueDecoder().decode(type, from: value(forKey: key) as Any)
+        try KeyValueDecoder().decode(type, from: object(forKey: key) as Any)
     }
 }

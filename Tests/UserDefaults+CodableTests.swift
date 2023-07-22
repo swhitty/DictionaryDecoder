@@ -48,6 +48,7 @@ final class UserDefaultsCodableTests: XCTestCase {
         XCTAssertThrowsError(try defaults.decode(Person.self, forKey: "person"))
     }
 
+#if canImport(Darwin)
     func testCanDecode() throws {
         let defaults = UserDefaults.makeMock()
         defaults.set(["name": "Herbert", "age": 99], forKey: "person")
@@ -55,6 +56,7 @@ final class UserDefaultsCodableTests: XCTestCase {
         let person = try defaults.decode(Person.self, forKey: "person")
         XCTAssertEqual(person, Person(name: "Herbert", age: 99))
     }
+#endif
 
     func testCanEncode() throws {
         let defaults = UserDefaults.makeMock()
@@ -81,6 +83,7 @@ final class UserDefaultsCodableTests: XCTestCase {
         XCTAssertNil(defaults.object(forKey: "person"))
     }
 
+#if canImport(Darwin)
     func testCanDecodeOptional() throws {
         let defaults = UserDefaults.makeMock()
 
@@ -91,6 +94,7 @@ final class UserDefaultsCodableTests: XCTestCase {
         let person = try defaults.decode(Optional<Person>.self, forKey: "person")
         XCTAssertEqual(person, Person(name: "Herbert", age: 99))
     }
+#endif
 
     func testEncodeRawRepresentable() {
         let defaults = UserDefaults.makeMock()
