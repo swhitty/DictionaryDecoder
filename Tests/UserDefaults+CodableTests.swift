@@ -91,6 +91,24 @@ final class UserDefaultsCodableTests: XCTestCase {
         let person = try defaults.decode(Optional<Person>.self, forKey: "person")
         XCTAssertEqual(person, Person(name: "Herbert", age: 99))
     }
+
+    func testEncodeRawRepresentable() {
+        let defaults = UserDefaults.makeMock()
+        XCTAssertNil(defaults.object(forKey: "food"))
+
+        XCTAssertEqual(
+            try defaults.decode(Seafood?.self, forKey: "food"),
+            nil
+        )
+
+        XCTAssertNoThrow(
+            try defaults.encode(Seafood.fish, forKey: "food")
+        )
+        XCTAssertEqual(
+            try defaults.decode(Seafood.self, forKey: "food"),
+            .fish
+        )
+    }
 }
 
 private struct Person: Codable, Equatable {

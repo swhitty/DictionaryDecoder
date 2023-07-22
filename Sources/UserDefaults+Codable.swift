@@ -34,46 +34,20 @@ import Foundation
 public extension UserDefaults {
 
     func encode<T: Encodable>(_ value: T, forKey key: String) throws {
-        let dictionary = try DictionaryEncoder().encode(value)
-        set(dictionary, forKey: key)
-    }
-
-    func encode<T: Encodable>(_ value: [T], forKey key: String) throws {
-        let dictionary = try DictionaryEncoder().encodeToArray(value)
-        set(dictionary, forKey: key)
-    }
-
-    func encode<T: Encodable>(_ value: T?, forKey key: String) throws {
-        switch value {
-        case .some(let value):
-            try encode(value, forKey: key)
-        case .none:
+        let encoded = try KeyValueEncoder().encode(value)
+        if KeyValueDecoder.isValueNil(encoded) {
             removeObject(forKey: key)
+        } else {
+            set(encoded, forKey: key)
         }
+    }
+
+    func decode<T: Decodable>(_ type: T?.Type, forKey key: String) throws -> T? {
+        guard let storage = value(forKey: key) else { return  nil }
+        return try KeyValueDecoder().decode(type, from: storage)
     }
 
     func decode<T: Decodable>(_ type: T.Type, forKey key: String) throws -> T {
-        guard let dictionary = dictionary(forKey: key) else {
-            throw Error.invalid
-        }
-        return try DictionaryDecoder().decode(type, from: dictionary)
-    }
-
-    func decode<T: Decodable>(_ type: [T].Type, forKey key: String) throws -> [T] {
-        guard let array = array(forKey: key) else {
-            throw Error.invalid
-        }
-        return try DictionaryDecoder().decode(type, from: array)
-    }
-
-    func decode<T: Decodable>(_ type: Optional<T>.Type, forKey key: String) throws -> T? {
-        guard object(forKey: key) == nil else {
-            return try decode(T.self, forKey: key)
-        }
-        return nil
-    }
-
-    private enum Error: Swift.Error {
-        case invalid
+        try KeyValueDecoder().decode(type, from: value(forKey: key) as Any)
     }
 }

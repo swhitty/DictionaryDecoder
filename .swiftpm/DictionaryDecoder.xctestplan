@@ -1,0 +1,32 @@
+{
+  "configurations" : [
+    {
+      "id" : "ACE38136-03E8-46F3-B764-B14B51C87B63",
+      "name" : "Test Scheme Action",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "codeCoverage" : {
+      "targets" : [
+        {
+          "containerPath" : "container:",
+          "identifier" : "DictionaryDecoder",
+          "name" : "DictionaryDecoder"
+        }
+      ]
+    }
+  },
+  "testTargets" : [
+    {
+      "target" : {
+        "containerPath" : "container:",
+        "identifier" : "DictionaryDecoderTests",
+        "name" : "DictionaryDecoderTests"
+      }
+    }
+  ],
+  "version" : 1
+}
