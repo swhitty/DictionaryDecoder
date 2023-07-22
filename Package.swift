@@ -1,4 +1,4 @@
-// swift-tools-version:5.4
+// swift-tools-version:5.7
 import PackageDescription
 
 let exclude: [String]
@@ -14,7 +14,7 @@ let exclude: [String]
 let package = Package(
     name: "DictionaryDecoder",
     platforms: [
-        .macOS(.v10_13), .iOS(.v10), .tvOS(.v10), .watchOS(.v4)
+        .macOS(.v10_13), .iOS(.v11), .tvOS(.v11), .watchOS(.v4)
     ],
     products: [
         .library(
