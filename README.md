@@ -7,6 +7,8 @@
 # DictionaryDecoder
 A Swift library for serializing `Codable` types to and from `[String: Any]` and `UserDefaults`.
 
+🚨This library has been moved to [KeyValueCoder](https://github.com/swhitty/KeyValueCoder)
+
 ## Usage
 ```swift
 struct Person: Codable {
