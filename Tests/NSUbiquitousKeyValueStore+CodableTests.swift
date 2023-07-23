@@ -72,6 +72,19 @@ final class NSUbiquitousKeyValueStoreCodableTests: XCTestCase {
         XCTAssertEqual(dictionary?["age"] as? Int, 21)
     }
 
+    func testCanEncodeRawRepresentable() throws {
+        guard #available(watchOS 9.0, *) else { return }
+        let defaults = NSUbiquitousKeyValueStore.makeMock()
+
+        XCTAssertNil(defaults.object(forKey: "food"))
+        try defaults.encode(Seafood.fish, forKey: "food")
+
+        XCTAssertEqual(
+            defaults.string(forKey: "food"),
+            "fish"
+        )
+    }
+
     func testCanEncodeOptional() throws {
         guard #available(watchOS 9.0, *) else { return }
         let defaults = NSUbiquitousKeyValueStore.makeMock()
@@ -117,20 +130,24 @@ final class MockKeyValueStore: NSUbiquitousKeyValueStore {
 
     private var storage = [String: Any]()
 
-    override func set(_ aDictionary: [String : Any]?, forKey aKey: String) {
-        storage[aKey] = aDictionary
+    override func set(_ value: Any?, forKey aKey: String) {
+        if value == nil {
+            storage.removeValue(forKey: aKey)
+        } else {
+            storage[aKey] = value
+        }
     }
 
     override func removeObject(forKey aKey: String) {
-        storage[aKey] = nil
-    }
-
-    override func dictionary(forKey aKey: String) -> [String: Any]? {
-        storage[aKey] as? [String: Any]
+        storage.removeValue(forKey: aKey)
     }
 
     override func object(forKey aKey: String) -> Any? {
-        storage[aKey]
+        if storage.keys.contains(aKey) {
+            return storage[aKey]
+        } else {
+            return nil
+        }
     }
 }
 
