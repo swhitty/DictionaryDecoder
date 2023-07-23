@@ -90,7 +90,6 @@ final class KeyValueDecoderTests: XCTestCase {
         )
     }
 
-#if canImport(Darwin)
     func testDecodes_Ints() {
         XCTAssertEqual(
             try KeyValueDecoder.decode(Int16.self, from: Int16.max),
@@ -144,6 +143,82 @@ final class KeyValueDecoderTests: XCTestCase {
         )
     }
 
+    func testDecodes_Float(){
+        XCTAssertEqual(
+            try KeyValueDecoder.decode(Float.self, from: 10),
+            10
+        )
+        XCTAssertEqual(
+            try KeyValueDecoder.decode(Float.self, from: -100.5),
+            -100.5
+        )
+        XCTAssertEqual(
+            try KeyValueDecoder.decode(Float.self, from: UInt8.max),
+            255
+        )
+        XCTAssertEqual(
+            try KeyValueDecoder.decode(Float.self, from: UInt64.max),
+            Float(UInt64.max)
+        )
+        XCTAssertEqual(
+            try KeyValueDecoder.decode(Float.self, from: NSNumber(20)),
+            20
+        )
+        XCTAssertEqual(
+            try KeyValueDecoder.decode(Float.self, from: NSNumber(value: 50.5)),
+            50.5
+        )
+        XCTAssertEqual(
+            try KeyValueDecoder.decode(Float.self, from: Decimal.pi),
+            Float((Decimal.pi as NSNumber).doubleValue)
+        )
+        XCTAssertEqual(
+            try KeyValueDecoder.decode(Float.self, from: UInt.max),
+            Float(UInt.max)
+        )
+        XCTAssertThrowsError(
+            try KeyValueDecoder.decode(Float.self, from: true)
+        )
+    }
+
+    func testDecodes_Double(){
+        XCTAssertEqual(
+            try KeyValueDecoder.decode(Double.self, from: 10),
+            10
+        )
+        XCTAssertEqual(
+            try KeyValueDecoder.decode(Double.self, from: -100.5),
+            -100.5
+        )
+        XCTAssertEqual(
+            try KeyValueDecoder.decode(Double.self, from: UInt8.max),
+            255
+        )
+        XCTAssertEqual(
+            try KeyValueDecoder.decode(Double.self, from: UInt64.max),
+            Double(UInt64.max)
+        )
+        XCTAssertEqual(
+            try KeyValueDecoder.decode(Double.self, from: NSNumber(20)),
+            20
+        )
+        XCTAssertEqual(
+            try KeyValueDecoder.decode(Double.self, from: NSNumber(value: 50.5)),
+            50.5
+        )
+        XCTAssertEqual(
+            try KeyValueDecoder.decode(Double.self, from: Decimal.pi),
+            (Decimal.pi as NSNumber).doubleValue
+        )
+        XCTAssertEqual(
+            try KeyValueDecoder.decode(Double.self, from: UInt.max),
+            Double(UInt.max)
+        )
+        XCTAssertThrowsError(
+            try KeyValueDecoder.decode(Double.self, from: true)
+        )
+    }
+
     func testDecodes_Decimal() {
         XCTAssertEqual(
             try KeyValueDecoder.decode(Decimal.self, from: 10),
@@ -177,7 +252,6 @@ final class KeyValueDecoderTests: XCTestCase {
             try KeyValueDecoder.decode(Decimal.self, from: true)
         )
     }
-#endif
 
     func testDecodes_URL() {
         XCTAssertEqual(
@@ -304,7 +378,6 @@ final class KeyValueDecoderTests: XCTestCase {
         )
     }
 
-#if canImport(Darwin)
     func testDecodes_KeyedRealNumbers() {
         let dict = [
             "tDouble": -10,
@@ -319,7 +392,6 @@ final class KeyValueDecoderTests: XCTestCase {
             )
         )
     }
-#endif
 
     func testDecodes_KeyedInts() {
         let dict = [
@@ -409,14 +481,12 @@ final class KeyValueDecoderTests: XCTestCase {
         )
     }
 
-#if canImport(Darwin)
     func testDecodes_UnkeyedDecimals() {
         XCTAssertEqual(
             try KeyValueDecoder.decode([Decimal].self, from: [Decimal(10), Double(20), Float(30), Int(10), UInt.max] as [Any]),
             [10, 20, 30, 10, Decimal(UInt.max)]
         )
     }
-#endif
 
     func testDecodes_UnkeyedBool() {
         XCTAssertEqual(
@@ -444,7 +514,6 @@ final class KeyValueDecoderTests: XCTestCase {
         )
     }
 
-#if canImport(Darwin)
     func testDecodes_UnkeyedFloat() {
         XCTAssertEqual(
             try KeyValueDecoder.decode([Float].self, from: [Double(5.5), Float(-0.5), Int(-10), UInt64.max] as [Any]),
@@ -468,7 +537,6 @@ final class KeyValueDecoderTests: XCTestCase {
             )
         )
     }
-#endif
 
     func testDecodes_UnkeyedNil() {
         XCTAssertEqual(
@@ -579,8 +647,6 @@ final class KeyValueDecoderTests: XCTestCase {
         )
     }
 
-
-#if canImport(Darwin)
     func testNSNumber_Int64Value() {
         XCTAssertEqual(NSNumber(10).getInt64Value(), 10)
         XCTAssertEqual(NSNumber(-10).getInt64Value(), -10)
@@ -602,7 +668,6 @@ final class KeyValueDecoderTests: XCTestCase {
         XCTAssertEqual(NSNumber(true).getDoubleValue(), nil)
         XCTAssertEqual((true as NSNumber).getDoubleValue(), nil)
     }
-#endif
 
     func testDecodingErrors() {
         AssertThrowsDecodingError(try KeyValueDecoder.decode(Seafood.self, from: 10)) { error in

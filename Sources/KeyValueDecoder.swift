@@ -564,7 +564,17 @@ extension NSNumber {
 #if canImport(Darwin)
         return CFNumberGetType(self as CFNumber)
 #else
-        return nil
+        guard type(of: self) != type(of: NSNumber(true)) else { return nil }
+        switch String(cString: objCType) {
+        case "c": return CFNumberType.charType
+        case "s": return CFNumberType.shortType
+        case "i": return CFNumberType.intType
+        case "q": return CFNumberType.longLongType
+        case "d": return CFNumberType.doubleType
+        case "f": return CFNumberType.floatType
+        case "Q": return CFNumberType.longLongType
+        default: return nil
+        }
 #endif
     }
 }
