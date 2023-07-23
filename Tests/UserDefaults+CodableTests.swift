@@ -109,6 +109,28 @@ final class UserDefaultsCodableTests: XCTestCase {
             .fish
         )
     }
+
+    func testEncodeBool() {
+        let defaults = UserDefaults.makeMock()
+        XCTAssertNil(defaults.object(forKey: "flag"))
+
+        XCTAssertNil(
+            try defaults.decode(Bool?.self, forKey: "flag")
+        )
+
+        XCTAssertNoThrow(
+            try defaults.encode(true, forKey: "flag")
+        )
+        XCTAssertTrue(
+            try defaults.decode(Bool.self, forKey: "flag")
+        )
+        XCTAssertNoThrow(
+            try defaults.encode(false, forKey: "flag")
+        )
+        XCTAssertFalse(
+            try defaults.decode(Bool.self, forKey: "flag")
+        )
+    }
 }
 
 private struct Person: Codable, Equatable {
