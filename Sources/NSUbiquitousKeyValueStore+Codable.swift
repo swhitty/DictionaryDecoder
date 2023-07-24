@@ -35,8 +35,9 @@ import Foundation
 public extension NSUbiquitousKeyValueStore {
 
     func encode<T: Encodable>(_ value: T, forKey key: String) throws {
-        let encoded = try KeyValueEncoder().encode(value)
-        if KeyValueDecoder.isValueNil(encoded) {
+        let encoder = KeyValueEncoder.makePlistCompatible()
+        let encoded = try encoder.encode(value)
+        if encoder.nilEncodingStrategy.isNull(encoded) {
             removeObject(forKey: key)
         } else {
             set(encoded, forKey: key)
@@ -45,10 +46,10 @@ public extension NSUbiquitousKeyValueStore {
 
     func decode<T: Decodable>(_ type: T?.Type, forKey key: String) throws -> T? {
         guard let storage = object(forKey: key) else { return nil }
-        return try KeyValueDecoder().decode(type, from: storage)
+        return try KeyValueDecoder.makePlistCompatible().decode(type, from: storage)
     }
 
     func decode<T: Decodable>(_ type: T.Type, forKey key: String) throws -> T {
-        try KeyValueDecoder().decode(type, from: object(forKey: key) as Any)
+        try KeyValueDecoder.makePlistCompatible().decode(type, from: object(forKey: key) as Any)
     }
 }

@@ -8,7 +8,7 @@
 //  Distributed under the permissive MIT license
 //  Get the latest version from here:
 //
-//  https://github.com/swhitty/DictionaryDecoder
+//  https://github.com/swhitty/KeyValueCoder
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
 //  of this software and associated documentation files (the "Software"), to deal
@@ -90,6 +90,24 @@ final class KeyValueEncodedTests: XCTestCase {
         XCTAssertEqual(
             try KeyValueEncoder.encodeSingleValue {
                 try $0.encode(String?.none)
+            },
+            .null
+        )
+        XCTAssertEqual(
+            try KeyValueEncoder.encodeSingleValue {
+                try $0.encode(Null())
+            },
+            .null
+        )
+        XCTAssertEqual(
+            try KeyValueEncoder.encodeSingleValue {
+                try $0.encode(Empty())
+            },
+            .value(NSDictionary())
+        )
+        XCTAssertEqual(
+            try KeyValueEncoder.encodeSingleValue(nilEncodingStrategy: .removed) {
+                try $0.encode(Null())
             },
             .null
         )
@@ -176,17 +194,11 @@ final class KeyValueEncodedTests: XCTestCase {
         )
     }
 
-    func testSingleContainer_ReturnsNull_WhenEmpty() throws {
+    func testSingleContainer_ReturnsEmptyObject_WhenEmpty() throws {
         XCTAssertEqual(
-            try KeyValueEncoder.encodeSingleValue { _ in }.getEncodedValue(),
-            .null
+            try KeyValueEncoder.encodeSingleValue { _ in }.getValue() as? NSDictionary,
+            [:]
         )
-    }
-
-    func testEncoder_ThrowsError_WhenEmpty() throws {
-        AssertThrowsDecodingError(try KeyValueEncoder().encodeValue { _ in  }.getValue()) { error in
-            XCTAssertEqual(error.debugDescription, "Expected value at SELF found nil")
-        }
     }
 
     func testEncodes() throws {
@@ -215,11 +227,13 @@ final class KeyValueEncodedTests: XCTestCase {
                 try $0.encode(String?.none, forKey: "first")
                 try $0.encode(String?.some("fish"), forKey: "second")
                 try $0.encodeNil(forKey: "third")
+                try $0.encode(Empty(), forKey: "fourth")
             }.getValue() as? NSDictionary,
             [
                 "first": Optional<Any>.none as Any,
                 "second": "fish",
                 "third": Optional<Any>.none as Any,
+                "fourth": NSDictionary(),
             ]
         )
     }
@@ -360,12 +374,14 @@ final class KeyValueEncodedTests: XCTestCase {
                 try $0.encode(String?.some("fish"))
                 try $0.encodeNil()
                 try $0.encode("chips")
+                try $0.encode(Empty())
             }.getValue() as? NSArray,
             [
                 Optional<Any>.none as Any,
                 "fish",
                 Optional<Any>.none as Any,
-                "chips"
+                "chips",
+                NSDictionary()
             ]
         )
     }
@@ -515,13 +531,127 @@ final class KeyValueEncodedTests: XCTestCase {
         )
     }
 
-}
+    func testNilEncodingStrategy_SingleContainer() {
+        let encoder = KeyValueEncoder()
 
+        encoder.nilEncodingStrategy = .removed
+        XCTAssertNil(
+            try encoder.encode(Int?.none)
+        )
+
+        encoder.nilEncodingStrategy = .default
+        XCTAssertNotNil(
+            try encoder.encode(Int?.none)
+        )
+        XCTAssertEqual(
+            try encoder.encode(Int?.none) as? Int?,
+            .none
+        )
+
+        encoder.nilEncodingStrategy = .stringNull
+        XCTAssertEqual(
+            try encoder.encode(Int?.none) as? String,
+            "$null"
+        )
+
+        encoder.nilEncodingStrategy = .nsNull
+        XCTAssertTrue(
+            try encoder.encode(Int?.none) is NSNull
+        )
+    }
+
+    func testNilEncodingStrategy_UnkeyedContainer() {
+        let encoder = KeyValueEncoder()
+
+        encoder.nilEncodingStrategy = .removed
+        XCTAssertEqual(
+            try encoder.encode([1, 2, Int?.none, 4]) as? [Int],
+            [1, 2, 4]
+        )
+
+        encoder.nilEncodingStrategy = .default
+        XCTAssertEqual(
+            try encoder.encode([1, 2, Int?.none, 4]) as? [Int?],
+            [1, 2, nil, 4]
+        )
+
+        encoder.nilEncodingStrategy = .stringNull
+        XCTAssertEqual(
+            try encoder.encode([1, Int?.none, 3, 4]) as? NSArray,
+            [1, "$null", 3, 4]
+        )
+
+        encoder.nilEncodingStrategy = .nsNull
+        XCTAssertEqual(
+            try encoder.encode([1, 2, 3, Int?.none]) as? NSArray,
+            [1, 2, 3, NSNull()]
+        )
+    }
+
+    func testNilEncodingStrategy_KeyedContainer() {
+        XCTAssertEqual(
+            try KeyValueEncoder.encodeKeyedValue(keyedBy: AnyCodingKey.self, nilEncodingStrategy: .removed) {
+                try $0.encodeNil(forKey: "fish")
+                try $0.encode(Null(), forKey: "chips")
+            }.getValue() as? NSDictionary,
+            [:]
+        )
+        XCTAssertEqual(
+            try KeyValueEncoder.encodeKeyedValue(keyedBy: AnyCodingKey.self, nilEncodingStrategy: .default) {
+                try $0.encodeNil(forKey: "fish")
+                try $0.encode(Null(), forKey: "chips")
+            }.getValue() as? NSDictionary,
+            [
+                "fish": String?.none as Any,
+                "chips": String?.none as Any
+            ]
+        )
+        XCTAssertEqual(
+            try KeyValueEncoder.encodeKeyedValue(keyedBy: AnyCodingKey.self, nilEncodingStrategy: .stringNull) {
+                try $0.encodeNil(forKey: "fish")
+                try $0.encode(Null(), forKey: "chips")
+            }.getValue() as? NSDictionary,
+            [
+                "fish": "$null",
+                "chips": "$null",
+            ]
+        )
+        XCTAssertEqual(
+            try KeyValueEncoder.encodeKeyedValue(keyedBy: AnyCodingKey.self, nilEncodingStrategy: .nsNull) {
+                try $0.encodeNil(forKey: "fish")
+                try $0.encode(Null(), forKey: "chips")
+            }.getValue() as? NSDictionary,
+            [
+                "fish": NSNull(),
+                "chips": NSNull(),
+            ]
+        )
+    }
+
+    func testPlistCompatibleEncoder() throws {
+        let keyValueAny = try KeyValueEncoder.makePlistCompatible().encode([1, 2, Int?.none, 4])
+        XCTAssertEqual(
+            try PropertyListDecoder.decodeAny([Int?].self, from: keyValueAny),
+            [1, 2, Int?.none, 4]
+        )
+    }
+
+    func testJSONCompatibleEncoder() throws {
+        let keyValueAny = try KeyValueEncoder.makeJSONCompatible().encode([1, 2, Int?.none, 4])
+        XCTAssertEqual(
+            try JSONDecoder.decodeAny([Int?].self, from: keyValueAny),
+            [1, 2, Int?.none, 4]
+        )
+    }
+}
 
 private extension KeyValueEncoder {
 
-    static func encodeSingleValue(with closure: (inout SingleValueEncodingContainer) throws -> Void) throws -> EncodedValue {
-        try KeyValueEncoder().encodeValue {
+    static func encodeSingleValue(nilEncodingStrategy: NilEncodingStrategy = .default,
+                                  with closure: (inout SingleValueEncodingContainer) throws -> Void) throws -> EncodedValue {
+        let encoder = KeyValueEncoder()
+        encoder.nilEncodingStrategy = nilEncodingStrategy
+        return try encoder.encodeValue {
             var container = $0.singleValueContainer()
             try closure(&container)
         }
@@ -534,8 +664,12 @@ private extension KeyValueEncoder {
         }
     }
 
-    static func encodeKeyedValue<K: CodingKey>(keyedBy: K.Type = K.self, with closure: @escaping (inout KeyedEncodingContainer<K>) throws -> Void) throws -> EncodedValue {
-        try KeyValueEncoder().encodeValue {
+    static func encodeKeyedValue<K: CodingKey>(keyedBy: K.Type = K.self,
+                                               nilEncodingStrategy: NilEncodingStrategy = .default,
+                                               with closure: @escaping (inout KeyedEncodingContainer<K>) throws -> Void) throws -> EncodedValue {
+        let encoder = KeyValueEncoder()
+        encoder.nilEncodingStrategy = nilEncodingStrategy
+        return try encoder.encodeValue {
             var container = $0.container(keyedBy: K.self)
             try closure(&container)
         }
@@ -545,6 +679,12 @@ private extension KeyValueEncoder {
         try withoutActuallyEscaping(closure) {
             try self.encodeValue(StubEncoder(closure: $0))
         }
+    }
+
+    static func makeJSONCompatible() -> KeyValueEncoder {
+        let encoder = KeyValueEncoder()
+        encoder.nilEncodingStrategy = .nsNull
+        return encoder
     }
 }
 
@@ -592,6 +732,10 @@ extension KeyValueEncoder.EncodedValue: Equatable {
 
 extension KeyValueEncoder.EncodedValue {
 
+    func getValue() throws -> Any {
+        try getValue(strategy: .default) as Any
+    }
+
     func getEncodedValue() throws -> Self {
         switch self {
         case let .provider(closure):
@@ -599,5 +743,30 @@ extension KeyValueEncoder.EncodedValue {
         case .null, .value:
             return self
         }
+    }
+}
+
+private extension PropertyListDecoder {
+    static func decodeAny<T: Decodable>(_ type: T.Type, from value: Any?) throws -> T {
+        let data = try PropertyListSerialization.data(fromPropertyList: value as Any, format: .xml, options: 0)
+        return try PropertyListDecoder().decode(type, from: data)
+    }
+}
+
+private extension JSONDecoder {
+    static func decodeAny<T: Decodable>(_ type: T.Type, from value: Any?) throws -> T {
+        let data = try JSONSerialization.data(withJSONObject: value as Any)
+        return try JSONDecoder().decode(type, from: data)
+    }
+}
+
+private struct Empty: Encodable {
+    func encode(to encoder: Encoder) throws { }
+}
+
+private struct Null: Encodable {
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.singleValueContainer()
+        try container.encodeNil()
     }
 }

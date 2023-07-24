@@ -8,7 +8,7 @@
 //  Distributed under the permissive MIT license
 //  Get the latest version from here:
 //
-//  https://github.com/swhitty/DictionaryDecoder
+//  https://github.com/swhitty/KeyValueCoder
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
 //  of this software and associated documentation files (the "Software"), to deal
@@ -293,8 +293,16 @@ final class KeyValueDecoderTests: XCTestCase {
     }
 
     func testDecodes_Null() {
+        let decoder = KeyValueDecoder()
+        decoder.nilDecodingStrategy = .default
+
+        XCTAssertThrowsError(
+            try decoder.decode(String?.self, from: NSNull())
+        )
+
+        decoder.nilDecodingStrategy = .nsNull
         XCTAssertEqual(
-            try KeyValueDecoder.decode(String?.self, from: NSNull()),
+            try decoder.decode(String?.self, from: NSNull()),
             nil
         )
     }
@@ -308,12 +316,43 @@ final class KeyValueDecoderTests: XCTestCase {
             try KeyValueDecoder.decode(String?.self, from: String?.none),
             nil
         )
+        XCTAssertThrowsError(
+            try KeyValueDecoder.decode(String.self, from: String?.none)
+        )
     }
 
     func testDecodes_NestedUnkeyed() {
         XCTAssertEqual(
             try KeyValueDecoder.decode([[Seafood]].self, from: [["fish", "chips"], ["fish"]]),
             [[.fish, .chips], [.fish]]
+        )
+    }
+
+    func testDecodes_UnkeyedOptionals() {
+        let decoder = KeyValueDecoder()
+
+        decoder.nilDecodingStrategy = .removed
+        XCTAssertEqual(
+            try decoder.decode([Int?].self, from: [1, 2, 3, 4]),
+            [1, 2, 3, 4]
+        )
+
+        decoder.nilDecodingStrategy = .default
+        XCTAssertEqual(
+            try decoder.decode([Int?].self, from: [1, 2, Int?.none, 4]),
+            [1, 2, nil, 4]
+        )
+
+        decoder.nilDecodingStrategy = .stringNull
+        XCTAssertEqual(
+            try decoder.decode([Int?].self, from: [1, "$null", 3, 4] as [Any]),
+            [1, nil, 3, 4]
+        )
+
+        decoder.nilDecodingStrategy = .nsNull
+        XCTAssertEqual(
+            try decoder.decode([Int?].self, from: [1, 2, 3, NSNull()] as [Any]),
+            [1, 2, 3, nil]
         )
     }
 
@@ -539,6 +578,9 @@ final class KeyValueDecoderTests: XCTestCase {
     }
 
     func testDecodes_UnkeyedNil() {
+        let decoder = KeyValueDecoder()
+        decoder.nilDecodingStrategy = .default
+
         XCTAssertEqual(
             try KeyValueDecoder.decodeUnkeyedValue(from: [String?.none as Any, NSNull() as Any, -10 as Any]) { unkeyed in
                 try [
@@ -547,7 +589,7 @@ final class KeyValueDecoderTests: XCTestCase {
                     unkeyed.decodeNil()
                 ]
             },
-            [true, true, false]
+            [true, false, false]
         )
 
         XCTAssertThrowsError(
@@ -689,6 +731,22 @@ final class KeyValueDecoderTests: XCTestCase {
             XCTAssertEqual(error.debugDescription, "Expected String at SELF.tArray[0].tString, found Int")
         }
     }
+
+    func testPlistCompatibleDecoder() throws {
+        let plistAny = try PropertyListEncoder.encodeAny([1, 2, Int?.none, 4])
+        XCTAssertEqual(
+            try KeyValueDecoder.makePlistCompatible().decode([Int?].self, from: plistAny),
+            [1, 2, Int?.none, 4]
+        )
+    }
+
+    func testJSONCompatibleDecoder() throws {
+        let jsonAny = try JSONEncoder.encodeAny([1, 2, Int?.none, 4])
+        XCTAssertEqual(
+            try KeyValueDecoder.makeJSONCompatible().decode([Int?].self, from: jsonAny),
+            [1, 2, Int?.none, 4]
+        )
+    }
 }
 
 func AssertThrowsDecodingError<T>(_ expression: @autoclosure () throws -> T,
@@ -755,6 +813,12 @@ private extension KeyValueDecoder {
         _ = try decoder.decode(StubDecoder.self, from: value)
         return proxy.result!
     }
+
+    static func makeJSONCompatible() -> KeyValueDecoder {
+        let decoder = KeyValueDecoder()
+        decoder.nilDecodingStrategy = .nsNull
+        return decoder
+    }
 }
 
 private extension CodingUserInfoKey {
@@ -814,4 +878,23 @@ struct AllTypes: Codable, Equatable {
     var tURL: URL?
     var tArray: [AllTypes]?
     var tDictionary: [String: AllTypes]?
+}
+
+struct SomeTypes: Codable, Equatable {
+    var tBool: Bool?
+    var tString: String?
+}
+
+private extension PropertyListEncoder {
+    static func encodeAny<T: Encodable>(_ value: T) throws -> Any {
+        let data = try PropertyListEncoder().encode(value)
+        return try PropertyListSerialization.propertyList(from: data, format: nil)
+    }
+}
+
+private extension JSONEncoder {
+    static func encodeAny<T: Encodable>(_ value: T) throws -> Any {
+        let data = try JSONEncoder().encode(value)
+        return try JSONSerialization.jsonObject(with: data, options: [])
+    }
 }
